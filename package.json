@@ -1,0 +1,27 @@
+{
+  "name": "arbitrage-os",
+  "version": "1.0.0",
+  "description": "ArbitrageOS - Meesho to Amazon Full Platform",
+  "private": true,
+  "scripts": {
+    "dev": "python3 -m http.server 8000",
+    "serve": "python3 -m http.server 8000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arpitkumar661921-bot/Arbitrage-OS"
+  },
+  "keywords": [
+    "arbitrage",
+    "meesho",
+    "amazon",
+    "analytics"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {},
+  "notes": {
+    "analytics": "Vercel Web Analytics is integrated via CDN script in index.html. For static HTML sites, the @vercel/analytics package is not needed - the script-based approach is recommended per Vercel documentation."
+  }
+}

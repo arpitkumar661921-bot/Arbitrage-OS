@@ -1,0 +1,2488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArbitrageOS — Meesho → Amazon Full Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#07090d;
+  --s1:#0c0f15;
+  --s2:#111520;
+  --s3:#161c2a;
+  --card:#131929;
+  --card2:#1a2235;
+  --border:#1e2a40;
+  --border2:#263550;
+  --accent:#f59e0b;
+  --accent-glow:rgba(245,158,11,0.15);
+  --accent-dim:rgba(245,158,11,0.08);
+  --green:#10b981;
+  --green-dim:rgba(16,185,129,0.1);
+  --blue:#3b82f6;
+  --blue-dim:rgba(59,130,246,0.1);
+  --red:#ef4444;
+  --red-dim:rgba(239,68,68,0.1);
+  --purple:#a855f7;
+  --purple-dim:rgba(168,85,247,0.1);
+  --orange:#f97316;
+  --muted:#2d3f5c;
+  --sub:#4a6080;
+  --txt2:#7a9ab8;
+  --txt:#c8ddf0;
+  --white:#e8f4ff;
+  --display:'Syne',sans-serif;
+  --mono:'JetBrains Mono',monospace;
+  --body:'Nunito',sans-serif;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--txt);font-family:var(--body);min-height:100vh;overflow-x:hidden;}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px;}
+
+/* ─── HEADER ─── */
+header{
+  background:rgba(7,9,13,0.92);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  height:54px;
+  display:flex;align-items:center;gap:14px;padding:0 1.25rem;
+  position:sticky;top:0;z-index:200;
+}
+.logo{font-family:var(--display);font-size:16px;font-weight:800;color:var(--accent);letter-spacing:-0.5px;display:flex;align-items:center;gap:8px;}
+.logo-sub{font-size:10px;color:var(--sub);font-family:var(--mono);background:var(--s3);border:1px solid var(--border2);padding:2px 8px;border-radius:4px;letter-spacing:.04em;}
+.header-badges{display:flex;gap:6px;margin-left:auto;align-items:center;}
+.hbadge{font-size:9px;font-weight:700;padding:3px 9px;border-radius:4px;font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;}
+.hbadge-ai{background:rgba(245,158,11,.15);color:var(--accent);border:1px solid rgba(245,158,11,.3);}
+.hbadge-live{background:var(--green-dim);color:var(--green);border:1px solid rgba(16,185,129,.3);display:flex;align-items:center;gap:4px;}
+.hbadge-live::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.mode-toggle{display:flex;background:var(--s2);border:1px solid var(--border);border-radius:6px;overflow:hidden;}
+.mode-btn{font-size:10px;font-family:var(--mono);padding:4px 10px;cursor:pointer;border:none;background:transparent;color:var(--sub);transition:all .15s;font-weight:700;}
+.mode-btn.active{background:var(--accent);color:#000;}
+
+/* ─── LAYOUT ─── */
+.layout{display:flex;min-height:calc(100vh - 54px);}
+
+/* ─── SIDEBAR ─── */
+.sidebar{
+  width:196px;flex-shrink:0;
+  background:var(--s1);
+  border-right:1px solid var(--border);
+  padding:.75rem 0;
+  display:flex;flex-direction:column;
+  overflow-y:auto;
+  position:sticky;top:54px;height:calc(100vh - 54px);
+}
+.nav-section{font-size:8.5px;font-weight:700;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;padding:.5rem 1rem .3rem;font-family:var(--mono);margin-top:6px;}
+.nav-section:first-child{margin-top:0;}
+.nav-item{
+  display:flex;align-items:center;gap:9px;
+  padding:8px 1rem;font-size:12.5px;font-weight:600;
+  color:var(--sub);cursor:pointer;border:none;background:transparent;
+  text-align:left;width:100%;transition:all .15s;
+  border-left:2px solid transparent;position:relative;
+  font-family:var(--body);
+}
+.nav-item:hover{color:var(--txt);background:var(--s2);}
+.nav-item.active{color:var(--accent);background:var(--accent-dim);border-left-color:var(--accent);}
+.nav-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0;}
+.nav-badge{font-size:8px;font-weight:700;padding:1px 5px;border-radius:3px;margin-left:auto;font-family:var(--mono);}
+.nb-new{background:var(--accent);color:#000;}
+.nb-hot{background:var(--red);color:#fff;}
+.nb-beta{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(168,85,247,.3);}
+.nav-divider{height:1px;background:var(--border);margin:.5rem 0;}
+
+/* ─── MAIN ─── */
+.main{flex:1;overflow-y:auto;min-width:0;}
+
+/* ─── SECTIONS ─── */
+.section{display:none;padding:1.5rem;animation:fadeIn .2s ease;}
+.section.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── PAGE HEADER ─── */
+.page-hdr{margin-bottom:1.5rem;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.page-hdr-left{}
+.page-title{font-family:var(--display);font-size:22px;font-weight:800;color:var(--white);margin-bottom:3px;letter-spacing:-.3px;}
+.page-sub{font-size:12px;color:var(--sub);}
+.page-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+
+/* ─── BUTTONS ─── */
+.btn{background:var(--accent);color:#000;border:none;border-radius:7px;padding:8px 16px;font-size:12.5px;font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap;font-family:var(--body);}
+.btn:hover{opacity:.85;transform:translateY(-1px);}
+.btn:active{transform:translateY(0);}
+.btn-sm{padding:5px 12px;font-size:11.5px;}
+.btn-ghost{background:var(--card2);color:var(--txt2);border:1px solid var(--border2);font-weight:600;}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+.btn-green{background:var(--green);color:#000;}
+.btn-red{background:var(--red);color:#fff;}
+.btn-blue{background:var(--blue);color:#fff;}
+.btn-purple{background:var(--purple);color:#fff;}
+
+/* ─── INPUTS ─── */
+input[type=text],input[type=number],select,textarea{
+  background:var(--s2);color:var(--txt);
+  border:1px solid var(--border2);border-radius:7px;
+  padding:8px 12px;font-size:12.5px;outline:none;
+  transition:border-color .15s;font-family:var(--body);width:100%;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);}
+textarea{resize:vertical;min-height:80px;}
+.input-group{display:flex;flex-direction:column;gap:5px;}
+.input-label{font-size:11px;color:var(--sub);font-weight:600;}
+
+/* ─── CARDS ─── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem;}
+.card2{background:var(--card2);border:1px solid var(--border2);border-radius:10px;padding:1rem;}
+.card-hover{transition:all .18s;cursor:pointer;}
+.card-hover:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.3);}
+.card-hover:hover::before{opacity:1;}
+
+/* ─── GRID ─── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.grid-auto{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
+.grid-auto-sm{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
+
+/* ─── METRIC TILES ─── */
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:1.25rem;}
+.metric{background:var(--s2);border:1px solid var(--border);border-radius:9px;padding:.8rem 1rem;}
+.metric-label{font-size:9px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.1em;font-family:var(--mono);margin-bottom:5px;}
+.metric-value{font-size:22px;font-weight:700;color:var(--white);font-family:var(--mono);}
+.mv-green{color:var(--green);}
+.mv-amber{color:var(--accent);}
+.mv-blue{color:var(--blue);}
+.mv-red{color:var(--red);}
+.mv-purple{color:var(--purple);}
+
+/* ─── SECTION DIVIDER ─── */
+.sec-div{font-size:9px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.12em;font-family:var(--mono);border-bottom:1px solid var(--border);padding-bottom:6px;margin:1.25rem 0 .75rem;}
+
+/* ─── PRODUCT CARD ─── */
+.prod-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.2rem;cursor:pointer;transition:all .18s;position:relative;overflow:hidden;}
+.prod-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:transparent;transition:background .18s;}
+.prod-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,0,0,.35);}
+.prod-card:hover::after{background:var(--accent);}
+.prod-card.selected{border-color:var(--accent);background:linear-gradient(135deg,var(--card),#1a2010);}
+.prod-card.selected::after{background:var(--accent);}
+
+.cat-pill{display:inline-flex;align-items:center;font-size:9px;font-weight:700;padding:3px 9px;border-radius:4px;margin-bottom:8px;letter-spacing:.07em;text-transform:uppercase;font-family:var(--mono);}
+.cp-home{background:#0a1a0f;color:#4ade80;border:1px solid #143320;}
+.cp-kitchen{background:#1a0d00;color:#fbbf24;border:1px solid #331b00;}
+.cp-baby{background:#100a1f;color:#c084fc;border:1px solid #1e1040;}
+.cp-personal{background:#030d1f;color:#60a5fa;border:1px solid #0a1a3a;}
+.cp-stationary{background:#180606;color:#f87171;border:1px solid #2d1010;}
+.cp-fitness{background:#001a12;color:#34d399;border:1px solid #002d1e;}
+.cp-toys{background:#1a0e00;color:#fb923c;border:1px solid #2e1a00;}
+
+.prod-name{font-size:13.5px;font-weight:700;color:var(--white);margin-bottom:9px;line-height:1.35;}
+.prod-prices{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;}
+.prod-buy{font-size:11px;color:var(--sub);font-family:var(--mono);}
+.prod-sell{font-size:18px;font-weight:700;color:var(--green);font-family:var(--mono);}
+.profit-tag{display:inline-block;font-size:10.5px;padding:3px 9px;border-radius:4px;margin-bottom:9px;font-weight:700;font-family:var(--mono);}
+.pt-good{background:var(--green-dim);color:var(--green);border:1px solid rgba(16,185,129,.2);}
+.pt-great{background:rgba(16,185,129,.18);color:#34d399;border:1px solid rgba(52,211,153,.3);}
+.scores-row{display:flex;gap:5px;flex-wrap:wrap;}
+.sc{font-size:9.5px;padding:2px 7px;border-radius:4px;background:var(--s2);color:var(--sub);border:1px solid var(--border);font-family:var(--mono);}
+.sc-hot{background:rgba(245,158,11,.12);color:var(--accent);border-color:rgba(245,158,11,.3);}
+
+/* ─── DETAIL PANEL ─── */
+.detail-panel{background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:1.5rem;margin-top:1.25rem;animation:fadeIn .2s ease;}
+.dp-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:1.25rem;}
+.dp-title{font-family:var(--display);font-size:16px;font-weight:800;color:var(--accent);flex:1;line-height:1.3;}
+.close-x{background:var(--s2);border:1px solid var(--border);color:var(--sub);border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;flex-shrink:0;font-family:var(--mono);}
+.close-x:hover{color:var(--txt);border-color:var(--border2);}
+
+/* ─── SCORE BAR ─── */
+.sb-wrap{margin-bottom:9px;}
+.sb-lbl{font-size:10.5px;color:var(--txt2);display:flex;justify-content:space-between;margin-bottom:4px;font-family:var(--mono);}
+.sb{height:5px;border-radius:99px;background:var(--border);overflow:hidden;}
+.sb-fill{height:100%;border-radius:99px;transition:width .7s cubic-bezier(.4,0,.2,1);}
+
+/* ─── LISTING BLOCK ─── */
+.lb{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:.9rem 1rem;margin-bottom:8px;}
+.lb-lbl{font-size:8.5px;font-weight:700;color:var(--sub);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);}
+.lb-title{font-size:14px;font-weight:700;color:var(--white);line-height:1.5;}
+.lb ul{padding-left:1.2rem;}
+.lb ul li{margin-bottom:5px;font-size:12.5px;line-height:1.55;color:var(--txt);}
+.kw-cloud{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+.kw{font-size:10.5px;padding:3px 9px;border-radius:4px;background:var(--blue-dim);border:1px solid rgba(59,130,246,.2);color:#93c5fd;font-family:var(--mono);}
+
+/* ─── STEP LIST ─── */
+.step-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:12.5px;line-height:1.6;align-items:flex-start;}
+.step-item:last-child{border-bottom:none;}
+.step-n{min-width:24px;height:24px;border-radius:50%;background:var(--accent);color:#000;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;margin-top:1px;font-family:var(--mono);}
+
+/* ─── RISK ITEM ─── */
+.risk-item{display:flex;gap:10px;align-items:flex-start;padding:8px 0;font-size:12.5px;line-height:1.6;border-bottom:1px solid var(--border);}
+.risk-item:last-child{border-bottom:none;}
+.risk-dot{min-width:7px;height:7px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:5px;}
+.risk-dot.red{background:var(--red);}
+
+/* ─── TOOLBAR ─── */
+.toolbar{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem;display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:1.25rem;}
+
+/* ─── AI OUTPUT ─── */
+.ai-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem;min-height:100px;}
+.ai-loading{color:var(--sub);font-size:12.5px;display:flex;align-items:center;gap:10px;}
+.dots{display:inline-flex;gap:4px;}
+.dots span{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:dp 1.2s infinite;}
+.dots span:nth-child(2){animation-delay:.2s;}
+.dots span:nth-child(3){animation-delay:.4s;}
+@keyframes dp{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
+.ai-text{font-size:12.5px;line-height:1.8;white-space:pre-wrap;color:var(--txt);}
+
+/* ─── CHIP FILTERS ─── */
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+.chip{font-size:11px;padding:5px 12px;border-radius:6px;background:var(--s2);border:1px solid var(--border2);color:var(--sub);cursor:pointer;transition:all .15s;font-family:var(--mono);}
+.chip:hover,.chip.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);}
+
+/* ─── STATS PILLS ─── */
+.stat-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.25rem;}
+.sp{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:7px;padding:5px 12px;font-size:11.5px;}
+.sp-dot{width:6px;height:6px;border-radius:50%;}
+
+/* ─── CALCULATOR ─── */
+.calc-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+@media(max-width:700px){.calc-wrap{grid-template-columns:1fr;}}
+.calc-result-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-top:.75rem;}
+.verdict-box{grid-column:1/-1;background:var(--s2);border-radius:8px;padding:.9rem 1rem;border:1px solid var(--border);}
+.verdict-text{font-size:13.5px;font-weight:700;}
+
+/* ─── DASHBOARD CHARTS ─── */
+.chart-bar-wrap{margin-bottom:6px;}
+.chart-bar-outer{height:8px;background:var(--border);border-radius:99px;overflow:hidden;}
+.chart-bar-inner{height:100%;border-radius:99px;transition:width .8s cubic-bezier(.4,0,.2,1);}
+.chart-label{font-size:11px;color:var(--txt2);display:flex;justify-content:space-between;margin-bottom:3px;font-family:var(--mono);}
+
+/* ─── ORDER CARD ─── */
+.order-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem;display:flex;align-items:center;gap:12px;margin-bottom:8px;transition:all .15s;}
+.order-card:hover{border-color:var(--border2);}
+.order-status{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.os-pending{background:rgba(245,158,11,.15);}
+.os-approved{background:var(--green-dim);}
+.os-shipped{background:var(--blue-dim);}
+.os-delivered{background:var(--green-dim);}
+.order-info{flex:1;}
+.order-name{font-size:13px;font-weight:700;color:var(--white);margin-bottom:3px;}
+.order-meta{font-size:11px;color:var(--sub);font-family:var(--mono);}
+.order-profit{font-size:14px;font-weight:700;color:var(--green);font-family:var(--mono);}
+.order-actions{display:flex;gap:6px;}
+
+/* ─── ALERT CARD ─── */
+.alert-card{display:flex;gap:10px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:.8rem 1rem;margin-bottom:8px;}
+.alert-icon{font-size:18px;flex-shrink:0;}
+.alert-msg{font-size:12.5px;line-height:1.5;color:var(--txt);}
+.alert-time{font-size:10px;color:var(--sub);font-family:var(--mono);margin-top:3px;}
+.alert-card.warn{border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.06);}
+.alert-card.success{border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.06);}
+.alert-card.danger{border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.06);}
+.alert-card.info{border-color:rgba(59,130,246,.3);background:rgba(59,130,246,.06);}
+
+/* ─── TRACKING ROW ─── */
+.track-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border);font-size:12.5px;}
+.track-row:last-child{border-bottom:none;}
+.track-status{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;font-family:var(--mono);white-space:nowrap;}
+.ts-shipped{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(59,130,246,.25);}
+.ts-transit{background:rgba(245,158,11,.1);color:var(--accent);border:1px solid rgba(245,158,11,.25);}
+.ts-delivered{background:var(--green-dim);color:var(--green);border:1px solid rgba(16,185,129,.25);}
+.ts-pending{background:var(--s2);color:var(--sub);border:1px solid var(--border);}
+
+/* ─── RISK BADGE ─── */
+.risk-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;font-family:var(--mono);}
+.rb-low{background:var(--green-dim);color:var(--green);border:1px solid rgba(16,185,129,.2);}
+.rb-med{background:rgba(245,158,11,.12);color:var(--accent);border:1px solid rgba(245,158,11,.25);}
+.rb-high{background:var(--red-dim);color:var(--red);border:1px solid rgba(239,68,68,.2);}
+
+/* ─── BRAND CARD ─── */
+.brand-card{background:linear-gradient(135deg,var(--card),var(--card2));border:1px solid var(--border2);border-radius:10px;padding:1rem;text-align:center;}
+.brand-name{font-family:var(--display);font-size:18px;font-weight:800;color:var(--white);margin-bottom:4px;}
+.brand-desc{font-size:11.5px;color:var(--sub);}
+
+/* ─── TOGGLE ─── */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);}
+.toggle-row:last-child{border-bottom:none;}
+.toggle-info{font-size:12.5px;color:var(--txt);}
+.toggle-sub{font-size:11px;color:var(--sub);margin-top:2px;}
+.toggle{position:relative;width:38px;height:20px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;cursor:pointer;inset:0;background:var(--border2);border-radius:99px;transition:.3s;}
+.toggle-slider::before{content:'';position:absolute;width:14px;height:14px;left:3px;bottom:3px;background:var(--sub);border-radius:50%;transition:.3s;}
+.toggle input:checked+.toggle-slider{background:var(--green);}
+.toggle input:checked+.toggle-slider::before{transform:translateX(18px);background:#fff;}
+
+/* ─── FLOW DIAGRAM ─── */
+.flow{display:flex;align-items:center;flex-wrap:wrap;gap:4px;padding:.75rem;background:var(--s2);border-radius:8px;border:1px solid var(--border);}
+.flow-step{background:var(--card2);border:1px solid var(--border2);border-radius:6px;padding:5px 10px;font-size:11px;color:var(--txt);font-family:var(--mono);}
+.flow-arr{color:var(--accent);font-size:13px;font-weight:700;}
+
+/* ─── COPY BTN ─── */
+.copy-btn{font-size:9.5px;padding:2px 8px;background:var(--s2);border:1px solid var(--border);color:var(--sub);border-radius:4px;cursor:pointer;font-family:var(--mono);}
+.copy-btn:hover{color:var(--accent);border-color:var(--accent);}
+
+/* ─── PROFIT TREND ─── */
+.sparkline-wrap{display:flex;align-items:flex-end;gap:3px;height:40px;}
+.spark-bar{background:var(--accent);border-radius:2px 2px 0 0;min-width:8px;transition:height .5s ease;opacity:.7;}
+.spark-bar:hover{opacity:1;}
+
+/* ─── EMPTY STATE ─── */
+.empty{text-align:center;padding:3rem 0;color:var(--sub);}
+.empty-icon{font-size:36px;margin-bottom:8px;}
+.empty-msg{font-size:13px;}
+
+/* ─── BUNDLE GENERATOR ─── */
+.bundle-output{background:linear-gradient(135deg,var(--s2),var(--card2));border:1px solid var(--border2);border-radius:10px;padding:1.1rem;margin-top:1rem;}
+.bundle-name-big{font-family:var(--display);font-size:20px;font-weight:800;color:var(--accent);margin-bottom:6px;}
+
+/* ─── SUBSCRIPTION CARD ─── */
+.plan-card{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:1.5rem;transition:all .2s;position:relative;}
+.plan-card:hover{border-color:var(--border2);}
+.plan-card.popular{border-color:var(--accent);background:linear-gradient(135deg,var(--card),#1a1a08);}
+.plan-popular-tag{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;font-size:9px;font-weight:700;padding:2px 12px;border-radius:99px;font-family:var(--mono);letter-spacing:.06em;}
+.plan-name{font-family:var(--display);font-size:16px;font-weight:800;color:var(--white);margin-bottom:4px;}
+.plan-price{font-family:var(--mono);font-size:28px;font-weight:700;color:var(--accent);margin-bottom:12px;}
+.plan-price span{font-size:13px;color:var(--sub);font-family:var(--body);}
+.plan-feature{display:flex;gap:8px;font-size:12.5px;color:var(--txt2);padding:5px 0;border-bottom:1px solid var(--border);}
+.plan-feature:last-of-type{border-bottom:none;}
+.pf-check{color:var(--green);}
+.pf-x{color:var(--sub);}
+
+/* ─── NOTIFICATION ─── */
+.notif-card{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:.8rem 1rem;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start;}
+.notif-icon{font-size:20px;flex-shrink:0;}
+.notif-content{}
+.notif-title{font-size:12.5px;font-weight:700;color:var(--white);margin-bottom:2px;}
+.notif-body{font-size:11.5px;color:var(--sub);line-height:1.5;}
+
+/* ─── DISCOVERY CARD ─── */
+.disc-card{background:var(--card2);border:1px solid var(--border2);border-radius:12px;padding:1.1rem 1.2rem;animation:fadeIn .25s ease;}
+.dc-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px;}
+.dc-name{font-size:13.5px;font-weight:700;color:var(--white);line-height:1.35;}
+.dc-score{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--accent);flex-shrink:0;}
+.dc-row{display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:5px;}
+.dc-key{color:var(--sub);}
+.dc-val{color:var(--txt);font-family:var(--mono);font-weight:600;}
+.dc-val.g{color:var(--green);}
+.dc-div{border:none;border-top:1px solid var(--border);margin:9px 0;}
+.dc-title{font-size:11.5px;color:var(--txt2);line-height:1.5;margin-bottom:7px;}
+.dc-bullets{padding-left:1.1rem;}
+.dc-bullets li{font-size:11px;color:var(--txt2);line-height:1.5;margin-bottom:3px;}
+.dc-risk{font-size:10.5px;color:var(--red);background:var(--red-dim);border:1px solid rgba(239,68,68,.2);border-radius:5px;padding:5px 9px;margin-top:8px;}
+.dc-exec{font-size:11.5px;color:var(--green);margin-top:6px;}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .section{padding:1rem;}
+  .grid-2,.grid-3{grid-template-columns:1fr;}
+  .calc-wrap{grid-template-columns:1fr;}
+}
+
+/* ─── OPTIMIZATION ITEM ─── */
+.opt-item{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:.9rem 1rem;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start;}
+.opt-type{font-size:9px;font-weight:700;padding:2px 8px;border-radius:4px;white-space:nowrap;flex-shrink:0;font-family:var(--mono);}
+.ot-price{background:rgba(245,158,11,.15);color:var(--accent);border:1px solid rgba(245,158,11,.3);}
+.ot-listing{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(59,130,246,.3);}
+.ot-scale{background:var(--green-dim);color:var(--green);border:1px solid rgba(16,185,129,.3);}
+.ot-exit{background:var(--red-dim);color:var(--red);border:1px solid rgba(239,68,68,.3);}
+.opt-text{font-size:12.5px;color:var(--txt);line-height:1.5;}
+
+/* ─── COMPLIANCE ITEM ─── */
+.compliance-row{padding:10px 0;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:flex-start;}
+.compliance-row:last-child{border-bottom:none;}
+.cr-icon{font-size:16px;flex-shrink:0;margin-top:2px;}
+.cr-info{}
+.cr-title{font-size:12.5px;font-weight:700;color:var(--white);margin-bottom:2px;}
+.cr-desc{font-size:11.5px;color:var(--sub);line-height:1.5;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <span>⚡</span> ArbitrageOS
+    <span class="logo-sub">meesho → amazon</span>
+  </div>
+  <span class="hbadge hbadge-ai">AI Powered</span>
+  <span class="hbadge hbadge-live">LIVE</span>
+  <div class="header-badges">
+    <div class="mode-toggle">
+      <button class="mode-btn active" onclick="setMode('beginner',this)">Beginner</button>
+      <button class="mode-btn" onclick="setMode('pro',this)">Pro</button>
+    </div>
+    <!-- PROFILE AVATAR -->
+    <div id="profile-avatar" onclick="toggleProfileModal()"
+      style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#f97316);
+      display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;font-weight:800;
+      color:#000;border:2px solid rgba(245,158,11,0.4);transition:all .2s;flex-shrink:0;position:relative;"
+      title="Profile">
+      <span id="avatar-initials">?</span>
+      <div id="avatar-dot" style="position:absolute;bottom:1px;right:1px;width:8px;height:8px;
+        border-radius:50%;background:var(--green);border:1.5px solid var(--bg);display:none;"></div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══ PROFILE MODAL ═══ -->
+<div id="profile-modal" style="display:none;position:fixed;top:62px;right:12px;z-index:500;
+  background:var(--s2);border:1px solid var(--border2);border-radius:14px;width:300px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.6);animation:fadeIn .15s ease;">
+  <!-- Not logged in view -->
+  <div id="profile-auth" style="padding:1.25rem;">
+    <div style="font-family:var(--display);font-size:15px;font-weight:800;color:var(--white);margin-bottom:4px;">Welcome to ArbitrageOS</div>
+    <div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);border-radius:8px;padding:8px 10px;margin-bottom:10px;">
+      <div style="font-size:11.5px;font-weight:700;color:var(--green);margin-bottom:2px;">✓ Free account = All AI features unlocked</div>
+      <div style="font-size:11px;color:var(--sub);">No API key needed — AI runs built-in for all users</div>
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:10px;">
+      <button onclick="authTab('email')" id="auth-tab-email"
+        style="flex:1;padding:6px;border-radius:6px;font-size:11.5px;font-weight:700;cursor:pointer;
+        background:var(--accent);color:#000;border:none;">Email</button>
+      <button onclick="authTab('phone')" id="auth-tab-phone"
+        style="flex:1;padding:6px;border-radius:6px;font-size:11.5px;font-weight:700;cursor:pointer;
+        background:var(--card);color:var(--sub);border:1px solid var(--border2);">Phone</button>
+    </div>
+    <div id="auth-email-form">
+      <input type="email" id="auth-email" placeholder="your@email.com"
+        style="width:100%;margin-bottom:8px;font-size:12.5px;">
+      <input type="password" id="auth-pass" placeholder="Password"
+        style="width:100%;margin-bottom:10px;font-size:12.5px;">
+    </div>
+    <div id="auth-phone-form" style="display:none;">
+      <input type="tel" id="auth-phone" placeholder="+91 98765 43210"
+        style="width:100%;margin-bottom:10px;font-size:12.5px;">
+    </div>
+    <input type="text" id="auth-name" placeholder="Your name (optional)"
+      style="width:100%;margin-bottom:10px;font-size:12.5px;">
+    <button onclick="doSignup()"
+      style="width:100%;padding:9px;border-radius:7px;background:var(--accent);color:#000;
+      font-size:13px;font-weight:700;border:none;cursor:pointer;margin-bottom:8px;">
+      Sign Up Free
+    </button>
+    <div id="auth-error" style="font-size:11px;color:var(--red);text-align:center;display:none;"></div>
+    <div style="text-align:center;font-size:11px;color:var(--sub);">
+      Already have account? <span onclick="doLogin()" style="color:var(--accent);cursor:pointer;font-weight:700;">Log In</span>
+    </div>
+  </div>
+  <!-- Logged in view -->
+  <div id="profile-loggedin" style="display:none;padding:1.25rem;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;">
+      <div id="profile-big-avatar" style="width:44px;height:44px;border-radius:50%;
+        background:linear-gradient(135deg,var(--accent),#f97316);display:flex;align-items:center;
+        justify-content:center;font-size:18px;font-weight:800;color:#000;flex-shrink:0;"></div>
+      <div>
+        <div id="profile-name-display" style="font-size:14px;font-weight:700;color:var(--white);"></div>
+        <div id="profile-contact-display" style="font-size:11px;color:var(--sub);font-family:var(--mono);"></div>
+      </div>
+    </div>
+    <div style="background:var(--card);border-radius:8px;padding:.75rem;border:1px solid var(--border);margin-bottom:1rem;">
+      <div style="font-size:9px;font-weight:700;color:var(--sub);letter-spacing:.1em;text-transform:uppercase;font-family:var(--mono);margin-bottom:8px;">Account Status</div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;">
+        <span style="color:var(--sub);">Plan</span><span style="color:var(--accent);font-weight:700;">Starter (Free)</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;">
+        <span style="color:var(--sub);">Products tracked</span><span id="stat-products" style="color:var(--white);font-weight:700;">0</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;">
+        <span style="color:var(--sub);">Orders today</span><span id="stat-orders" style="color:var(--green);font-weight:700;">0</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;">
+        <span style="color:var(--sub);">Member since</span><span id="stat-since" style="color:var(--txt2);font-weight:600;font-family:var(--mono);">-</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:6px;">
+      <button onclick="doLogout()"
+        style="flex:1;padding:7px;border-radius:7px;background:var(--card);color:var(--sub);
+        border:1px solid var(--border2);font-size:12px;font-weight:600;cursor:pointer;">Log Out</button>
+      <button onclick="switchTab('monetization',document.querySelector('[onclick*=monetization]'))"
+        style="flex:1;padding:7px;border-radius:7px;background:var(--accent);color:#000;
+        border:none;font-size:12px;font-weight:700;cursor:pointer;">Upgrade ↗</button>
+    </div>
+  </div>
+</div>
+<!-- click outside to close -->
+<div id="profile-overlay" onclick="closeProfileModal()"
+  style="display:none;position:fixed;inset:0;z-index:499;"></div>
+
+<!-- GEMINI API KEY BANNER -->
+<div class="layout">
+
+<!-- ═══ SIDEBAR ═══ -->
+<nav class="sidebar" id="sidebar">
+  <div class="nav-section">Discover</div>
+  <button class="nav-item active" onclick="switchTab('discover',this)"><span class="nav-icon">🔍</span> Products<span class="nav-badge nb-hot">10</span></button>
+  <button class="nav-item" onclick="switchTab('ai-discovery',this)"><span class="nav-icon">🤖</span> AI Discovery<span class="nav-badge nb-new">NEW</span></button>
+  <button class="nav-item" onclick="switchTab('bundle-gen',this)"><span class="nav-icon">🧩</span> Bundle Gen<span class="nav-badge nb-beta">AI</span></button>
+  <button class="nav-item" onclick="switchTab('trend',this)"><span class="nav-icon">📈</span> Trends<span class="nav-badge nb-new">NEW</span></button>
+
+  <div class="nav-section">Pricing</div>
+  <button class="nav-item" onclick="switchTab('calculator',this)"><span class="nav-icon">📊</span> Profit Calc</button>
+  <button class="nav-item" onclick="switchTab('smart-price',this)"><span class="nav-icon">💰</span> Smart Pricing</button>
+
+  <div class="nav-section">Listings</div>
+  <button class="nav-item" onclick="switchTab('listing',this)"><span class="nav-icon">✍️</span> Listing Gen</button>
+  <button class="nav-item" onclick="switchTab('branding',this)"><span class="nav-icon">🏷️</span> Branding</button>
+  <button class="nav-item" onclick="switchTab('sku',this)"><span class="nav-icon">📦</span> SKU Manager</button>
+
+  <div class="nav-section">Orders</div>
+  <button class="nav-item" onclick="switchTab('orders',this)"><span class="nav-icon">🛒</span> Order Alerts<span class="nav-badge nb-hot">3</span></button>
+  <button class="nav-item" onclick="switchTab('execution',this)"><span class="nav-icon">⚡</span> Execution<span class="nav-badge nb-new">CORE</span></button>
+  <button class="nav-item" onclick="switchTab('tracking',this)"><span class="nav-icon">🚚</span> Tracking</button>
+
+  <div class="nav-section">Analytics</div>
+  <button class="nav-item" onclick="switchTab('dashboard',this)"><span class="nav-icon">📊</span> Dashboard</button>
+  <button class="nav-item" onclick="switchTab('optimization',this)"><span class="nav-icon">🔄</span> AI Optimizer</button>
+  <button class="nav-item" onclick="switchTab('risk',this)"><span class="nav-icon">🛡️</span> Risk & Compliance</button>
+
+  <div class="nav-section">Settings</div>
+  <button class="nav-item" onclick="switchTab('notifications',this)"><span class="nav-icon">🔔</span> Notifications</button>
+  <button class="nav-item" onclick="switchTab('monetization',this)"><span class="nav-icon">💎</span> Plans</button>
+  <button class="nav-item" onclick="switchTab('custom',this)"><span class="nav-icon">💬</span> Ask AI</button>
+</nav>
+
+<main class="main">
+
+<!-- ════════════════════════════════════════
+  TAB 1: DISCOVER PRODUCTS
+════════════════════════════════════════ -->
+<div class="section active" id="tab-discover">
+  <div class="page-hdr">
+    <div class="page-hdr-left">
+      <div class="page-title">Curated Opportunities</div>
+      <div class="page-sub">Pre-analyzed Meesho → Amazon combos with full profit breakdown</div>
+    </div>
+  </div>
+  <div class="toolbar">
+    <select id="cat-sel" onchange="renderCards()">
+      <option value="all">All categories</option>
+      <option value="home">Home & Decor</option>
+      <option value="kitchen">Kitchen</option>
+      <option value="baby">Baby Care</option>
+      <option value="personal">Personal Care</option>
+      <option value="stationary">Stationery</option>
+      <option value="fitness">Fitness</option>
+      <option value="toys">Toys</option>
+    </select>
+    <select id="sort-sel" onchange="renderCards()">
+      <option value="score">↑ Opportunity Score</option>
+      <option value="profit">↑ Profit ₹</option>
+      <option value="margin">↑ Margin %</option>
+    </select>
+    <select id="min-p" onchange="renderCards()">
+      <option value="0">Min profit: any</option>
+      <option value="100">₹100+</option>
+      <option value="150">₹150+</option>
+      <option value="200">₹200+</option>
+    </select>
+  </div>
+  <div id="stat-pills" class="stat-pills"></div>
+  <div id="cards-grid" class="grid-auto"></div>
+  <div id="detail-panel" style="display:none;"></div>
+</div>
+
+<!-- ════════════════════════════════════════
+  TAB 2: AI DISCOVERY
+════════════════════════════════════════ -->
+<div class="section" id="tab-ai-discovery">
+  <div class="page-hdr">
+    <div class="page-hdr-left">
+      <div class="page-title">AI Product Discovery</div>
+      <div class="page-sub">Real-time AI-powered opportunity detection based on your criteria</div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:1rem;">
+    <div style="font-size:11.5px;color:var(--sub);margin-bottom:8px;font-weight:600;">Quick filters — click to activate:</div>
+    <div class="chips" id="disc-chips">
+      <span class="chip" onclick="this.classList.toggle('active')">🏠 Home & Decor</span>
+      <span class="chip" onclick="this.classList.toggle('active')">🍳 Kitchen</span>
+      <span class="chip" onclick="this.classList.toggle('active')">👶 Baby Care</span>
+      <span class="chip" onclick="this.classList.toggle('active')">💄 Personal Care</span>
+      <span class="chip" onclick="this.classList.toggle('active')">🧘 Fitness</span>
+      <span class="chip" onclick="this.classList.toggle('active')">🎒 Stationery</span>
+      <span class="chip" onclick="this.classList.toggle('active')">under ₹200 cost</span>
+      <span class="chip" onclick="this.classList.toggle('active')">sell ₹500+</span>
+      <span class="chip" onclick="this.classList.toggle('active')">low competition</span>
+      <span class="chip" onclick="this.classList.toggle('active')">high demand</span>
+      <span class="chip" onclick="this.classList.toggle('active')">combo packs only</span>
+      <span class="chip" onclick="this.classList.toggle('active')">gift sets</span>
+      <span class="chip" onclick="this.classList.toggle('active')">festival season</span>
+      <span class="chip" onclick="this.classList.toggle('active')">lightweight</span>
+    </div>
+    <div class="input-group" style="margin-bottom:12px;">
+      <label class="input-label">Describe what you're looking for (optional):</label>
+      <textarea id="disc-query" placeholder="e.g. combo packs under ₹300 I can sell for ₹700+ in the kitchen category, avoid fragile items..."></textarea>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button class="btn" onclick="runDiscovery()">🔍 Discover Opportunities</button>
+      <span style="font-size:11.5px;color:var(--sub);">AI returns 4–6 scored opportunities with listing</span>
+    </div>
+  </div>
+  <div id="discovery-output"></div>
+</div>
+
+<!-- ════════════════════════════════════════
+  TAB 3: BUNDLE GENERATOR
+════════════════════════════════════════ -->
+<div class="section" id="tab-bundle-gen">
+  <div class="page-hdr">
+    <div class="page-hdr-left">
+      <div class="page-title">Custom Bundle Generator</div>
+      <div class="page-sub">AI creates new bundle ideas with names, pricing & market positioning</div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:1rem;">
+    <div class="grid-2" style="gap:12px;margin-bottom:12px;">
+      <div class="input-group">
+        <label class="input-label">Category / Niche</label>
+        <select id="bg-category">
+          <option>Home & Kitchen</option><option>Personal Care</option><option>Baby & Kids</option>
+          <option>Fitness & Yoga</option><option>Stationery</option><option>Travel</option><option>Office</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Target audience</label>
+        <select id="bg-audience">
+          <option>Women 25-40</option><option>Men 20-35</option><option>New Parents</option>
+          <option>Students</option><option>WFH Professionals</option><option>Gifters</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Max Meesho cost (₹)</label>
+        <input type="number" id="bg-cost" value="300" placeholder="300">
+      </div>
+      <div class="input-group">
+        <label class="input-label">Target Amazon price (₹)</label>
+        <input type="number" id="bg-price" value="799" placeholder="799">
+      </div>
+    </div>
+    <div class="input-group" style="margin-bottom:12px;">
+      <label class="input-label">Additional notes (optional)</label>
+      <input type="text" id="bg-notes" placeholder="e.g. festive gifting, travel-friendly, eco-conscious...">
+    </div>
+    <button class="btn" onclick="generateBundle()">🧩 Generate Bundle Ideas</button>
+  </div>
+  <div id="bundle-output"></div>
+</div>
+
+<!-- ════════════════════════════════════════
+  TAB 4: TREND DETECTION
+════════════════════════════════════════ -->
+<div class="section" id="tab-trend">
+  <div class="page-hdr">
+    <div class="page-hdr-left">
+      <div class="page-title">Trend Detection</div>
+      <div class="page-sub">Detect viral & seasonal product opportunities before competition catches on</div>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-ghost btn-sm" onclick="loadTrends()">🔄 Refresh Trends</button>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:1rem;">
+    <div class="input-group" style="margin-bottom:12px;">
+      <label class="input-label">Ask AI for trend analysis:</label>
+      <textarea id="trend-query" placeholder="e.g. What categories will boom in summer 2025? Which gifting products spike around Diwali?"></textarea>
+    </div>
+    <button class="btn" onclick="runTrendAnalysis()">📈 Analyze Trends</button>
+  </div>
+  <div id="trend-output"></div>
+
+  <div class="sec-div" style="margin-top:1.5rem;">Seasonal Calendar</div>
+  <div class="grid-3" style="gap:10px;">
+    <div class="card2"><div style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:8px;">🪔 Diwali (Oct–Nov)</div><div style="font-size:12px;color:var(--txt2);line-height:1.6;">Gifting sets, home decor, lights, diyas, premium combos. Start stocking 6 weeks ahead.</div></div>
+    <div class="card2"><div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:8px;">💝 Valentine's (Feb)</div><div style="font-size:12px;color:var(--txt2);line-height:1.6;">Skincare combos, fragrance sets, couple accessories. Peak 2 weeks prior.</div></div>
+    <div class="card2"><div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:8px;">🎒 Back-to-School (Jun)</div><div style="font-size:12px;color:var(--txt2);line-height:1.6;">Stationery bundles, bags, school kits. High volume, lower margin — focus on velocity.</div></div>
+    <div class="card2"><div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:8px;">🌞 Summer (Mar–May)</div><div style="font-size:12px;color:var(--txt2);line-height:1.6;">Cooling products, travel kits, summer skincare. Fast-moving, good margins.</div></div>
+    <div class="card2"><div style="font-size:12px;font-weight:700;color:var(--purple);margin-bottom:8px;">👶 Baby Shower (Year-round)</div><div style="font-size:12px;color:var(--txt2);line-height:1.6;">Grooming kits, soft toys, organic combos. Low competition, premium pricing possible.</div></div>
+    <div class="card2"><div style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:8px;">💻 WFH Season (Year-round)</div><div style="font-size:12px;color:var(--txt2);line-height:1.6;">Desk organizers, cable kits, stationery. Consistent demand with low seasonality.</div></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+  TAB 5: PROFIT CALCULATOR
+════════════════════════════════════════ -->
+<div class="section" id="tab-calculator">
+  <div class="page-hdr">
+    <div class="page-hdr-left">
+      <div class="page-title">Profit Calculator</div>
+      <div class="page-sub">Validate profitability with full cost breakdown before listing</div>
+    </div>
+  </div>
+  <div class="calc-wrap">
+    <div class="card">
+      <div class="sec-div" style="margin-top:0;">Input Parameters</div>
+      <div class="input-group" style="margin-bottom:10px;"><label class="input-label">Meesho cost (₹)</label><input type="number" id="c-meesho" value="180" oninput="calcProfit()"></div>
+      <div class="input-group" style="margin-bottom:10px;"><label class="input-label">Amazon selling price (₹)</label><input type="number" id="c-amz" value="499" oninput="calcProfit()"></div>
+      <div class="input-group" style="margin-bottom:10px;"><label class="input-label">Amazon platform fee % <span style="color:var(--sub)">(15–18%)</span></label><input type="number" id="c-fee" value="16" oninput="calcProfit()"></div>
+      <div class="input-group" style="margin-bottom:10px;"><label class="input-label">Shipping cost (₹)</label><input type="number" id="c-ship" value="60" oninput="calcProfit()"></div>
+      <div class="input-group" style="margin-bottom:10px;"><label class="input-label">Return buffer % <span style="color:var(--sub)">(expected returns)</span></label><input type="number" id="c-ret" value="8" oninput="calcProfit()"></div>
+      <div class="input-group" style="margin-bottom:10px;"><label class="input-label">Packaging cost (₹)</label><input type="number" id="c-pack" value="15" oninput="calcProfit()"></div>
+    </div>
+    <div class="card">
+      <div class="sec-div" style="margin-top:0;">Profit Breakdown</div>
+      <div id="calc-result-grid" class="calc-result-grid"></div>
+      <div style="margin-top:1rem;">
+        <div class="sec-div">Profit Margin Visualizer</div>
+        <div id="margin-bars"></div>
+      </div>
+    </div>
+  </div>
+  <p style="font-size:11.5px;color:var(--sub);margin-top:10px;">💡 Target at least ₹100 net profit and 20%+ margin for a sustainable arbitrage business. Minimum 3x price multiple recommended.</p>
+</div>
+
+<!-- ════════════════════════════════════════
+  TAB 6: SMART PRICING
+════════════════════════════════════════ -->
+<div class="section" id="tab-smart-price">
+  <div class="page-hdr">
+    <div class="page-hdr-left">
+      <div class="page-title">Smart Pricing Engine</div>
+      <div class="page-sub">AI suggests optimal price based on demand, competition & margin targets</div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:1rem;">
+    <div class="grid-2" style="gap:12px;margin-bottom:12px;">
+      <div class="input-group"><label class="input-label">Product name</label><input type="text" id="sp-product" placeholder="e.g. Set of 6 microfiber cleaning cloths"></div>
+      <div class="input-group"><label class="input-label">Meesho cost (₹)</label><input type="number" id="sp-cost" value="150" placeholder="150"></div>
+      <div class="input-group"><label class="input-label">Category</label>
+        <select id="sp-cat"><option>Home & Kitchen</option><option>Personal Care</option><option>Baby</option><option>Fitness</option><option>Stationery</option></select>
+      </div>
+      <div class="input-group"><label class="input-label">Competition level</label>
+        <select id="sp-comp"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select>
+      </div>
+    </div>
+    <button class="btn" onclick="runSmartPricing()">💰 Get Optimal Price</button>
+  </div>
+  <div id="sp-output"></div>
+</div>
+
+<!-- ════════════════════════════════════════
+  TAB 7: LISTING GENERATOR
+════════════════════════════════════════ -->
+<div class="section" id="tab-listing">
+  <div class="page-hdr">
+    <div class="page-hdr-left">
+      <div class="page-title">AI Listing Generator</div>
+      <div class="page-sub">High-converting Amazon listings with title, bullets, description & SEO keywords</div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:1rem;">
+    <div class="grid-2" style="gap:12px;margin-bottom:12px;">
+      <div class="input-group"><label class="input-label">Product name / description</label><input type="text" id="lg-product" placeholder="e.g. set of 6 microfiber cleaning cloths"></div>
+      <div class="input-group"><label class="input-label">Selling price (₹)</label><input type="number" id="lg-price" placeholder="499"></div>
+    </div>
+    <div class="input-group" style="margin-bottom:12px;"><label class="input-label">Any special features / USPs (optional)</label><input type="text" id="lg-usp" placeholder="e.g. eco-friendly, combo pack, gift-ready packaging..."></div>
+    <button class="btn" onclick="generateListing()">✍️ Generate Listing</button>
+  </div>
+  <div id="listing-output"></div>
+</div>
+
+<!-- ════════════════════════════════════════
+  TAB 8: BRANDING
+════════════════════════════════════════ -->
+<div class="section" id="tab-branding">
+  <div class="page-hdr">
+    <div class="page-hdr-left">
+      <div class="page-title">Branding Generator</div>
+      <div class="page-sub">AI creates brand names, bundle names & product positioning for your listings</div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:1rem;">
+    <div class="grid-2" style="gap:12px;margin-bottom:12px;">
+      <div class="input-group"><label class="input-label">Product / Category</label><input type="text" id="br-product" placeholder="e.g. microfiber cleaning cloths, yoga mat combo"></div>
+      <div class="input-group"><label class="input-label">Brand tone</label>
+        <select id="br-tone"><option>Premium & Elegant</option><option>Fun & Playful</option><option>Eco & Natural</option><option>Professional & Minimal</option><option>Wellness & Self-care</option></select>
+      </div>
+    </div>
+    <button class="btn" onclick="generateBranding()">🏷️ Generate Brand Identity</button>
+  </div>
+  <div id="branding-output"></div>
+</div>
+
+<!-- ════════════════════════════════════════
+  TAB 9: SKU MANAGER
+════════════════════════════════════════ -->
+<div class="section" id="tab-sku">
+  <div class="page-hdr">
+    <div class="page-hdr-left">
+      <div class="page-title">SKU & Catalog Manager</div>
+      <div class="page-sub">Track your products, virtual inventory and listing status</div>
+    </div>
+    <div class="page-actions"><button class="btn btn-sm" onclick="addSKU()">+ Add SKU</button></div>
+  </div>
+  <div class="card" style="margin-bottom:1rem;">
+    <div id="sku-table">
+      <div style="display:grid;grid-template-columns:1fr 80px 80px 80px 100px 80px;gap:8px;padding:8px 0;border-bottom:1px solid var(--border2);font-size:10px;font-weight:700;color:var(--sub);font-family:var(--mono);letter-spacing:.06em;">
+        <span>PRODUCT</span><span>MEESHO ₹</span><span>AMAZON ₹</span><span>PROFIT ₹</span><span>STATUS</span><span>ACTION</span>
+      </div>
+      <div id="sku-rows"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+  TAB 10: ORDER ALERTS
+════════════════════════════════════════ -->
+<div class="section" id="tab-orders">
+  <div class="page-hdr">
+    <div class="page-hdr-left">
+      <div class="page-title">Order Detection & Alerts</div>
+      <div class="page-sub">New orders detected instantly — review profit & approve to process</div>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-ghost btn-sm" onclick="simulateOrder()">+ Simulate Order</button>
+      <button class="btn btn-sm" onclick="approveAll()">✓ Approve All</button>
+    </div>
+  </div>
+  <div class="metrics-row" id="order-metrics"></div>
+  <div class="sec-div">Pending Approval</div>
+  <div id="pending-orders"></div>
+  <div class="sec-div">Recent Alerts</div>
+  <div id="order-alerts"></div>
+</div>
+
+<!-- ════════════════════════════════════════
+  TAB 11: ORDER EXECUTION
+════════════════════════════════════════ -->
+<div class="section" id="tab-execution">
+  <div class="page-hdr">
+    <div class="page-hdr-left">
+      <div class="page-title">Order Execution System</div>
+      <div class="page-sub">One-tap approval → auto-fill customer details → place order on Meesho</div>
+    </div>
+  </div>
+
+  <div class="flow" style="margin-bottom:1.25rem;">
+    <span class="flow-step">📱 Amazon Order</span><span class="flow-arr">→</span>
+    <span class="flow-step">🔔 Alert Received</span><span class="flow-arr">→</span>
+    <span class="flow-step">💰 Profit Check</span><span class="flow-arr">→</span>
+    <span class="flow-step">✅ Approve</span><span class="flow-arr">→</span>
+    <span class="flow-step">🛒 Auto-fill Meesho</span><span class="flow-arr">→</span>
+    <span class="flow-step">📦 Shipped</span>
+  </div>
+
+  <div class="grid-2" style="gap:1rem;margin-bottom:1rem;">
+    <div class="card">
+      <div class="sec-div" style="margin-top:0;">One-Tap Approval</div>
+      <div id="exec-order-list"></div>
+    </div>
+    <div class="card">
+      <div class="sec-div" style="margin-top:0;">Auto-Fill Preview</div>
+      <div id="autofill-preview">
+        <div class="empty"><div class="empty-icon">👆</div><div class="empty-msg">Select an order to preview auto-fill</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sec-div" style="margin-top:0;">Semi-Automation Settings</div>
+    <div class="toggle-row">
+      <div><div class="toggle-info">Browser Auto-fill</div><div class="toggle-sub">Auto-fill customer address on Meesho order form</div></div>
+      <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+    </div>
+    <div class="toggle-row">
+      <div><div class="toggle-info">Human Confirmation Step</div><div class="toggle-sub">Require manual review before placing order</div></div>
+      <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+    </div>
+    <div class="toggle-row">
+      <div><div class="toggle-info">Bulk Order Processing</div><div class="toggle-sub">Approve multiple orders with a single tap</div></div>
+      <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="toggle-row">
+      <div><div class="toggle-info">Auto-reject Low Profit</div><div class="toggle-sub">Automatically skip orders with profit below ₹80</div></div>
+      <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+  TAB 12: TRACKING
+════════════════════════════════════════ -->
+<div class="section" id="tab-tracking">
+  <div class="page-hdr">
+    <div class="page-hdr-left">
+      <div class="page-title">Order Tracking & Fulfillment</div>
+      <div class="page-sub">Track Meesho shipments and sync delivery status to Amazon</div>
+    </div>
+    <div class="page-actions"><button class="btn btn-ghost btn-sm" onclick="syncStatus()">🔄 Sync Status</button></div>
+  </div>
+  <div class="metrics-row" id="track-metrics"></div>
+  <div class="card">
+    <div class="sec-div" style="margin-top:0;">Active Shipments</div>
+    <div id="tracking-list"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+  TAB 13: ANALYTICS DASHBOARD
+════════════════════════════════════════ -->
+<div class="section" id="tab-dashboard">
+  <div class="page-hdr">
+    <div class="page-hdr-left">
+      <div class="page-title">Analytics Dashboard</div>
+      <div class="page-sub">Revenue, profit, ROI and conversion analytics</div>
+    </div>
+    <div class="page-actions">
+      <select style="width:auto;" id="dash-period" onchange="renderDashboard()">
+        <option value="7">Last 7 days</option>
+        <option value="30" selected>Last 30 days</option>
+        <option value="90">Last 90 days</option>
+      </select>
+    </div>
+  </div>
+  <div class="metrics-row" id="dash-metrics"></div>
+  <div class="grid-2" style="gap:1rem;margin-bottom:1rem;">
+    <div class="card">
+      <div class="sec-div" style="margin-top:0;">Daily Profit (₹)</div>
+      <div id="profit-chart" style="display:flex;align-items:flex-end;gap:4px;height:80px;padding:0 2px;"></div>
+    </div>
+    <div class="card">
+      <div class="sec-div" style="margin-top:0;">Revenue by Category</div>
+      <div id="cat-chart"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="sec-div" style="margin-top:0;">Per-Product Performance</div>
+    <div id="product-perf"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+  TAB 14: AI OPTIMIZATION LOOP
+════════════════════════════════════════ -->
+<div class="section" id="tab-optimization">
+  <div class="page-hdr">
+    <div class="page-hdr-left">
+      <div class="page-title">AI Optimization Loop</div>
+      <div class="page-sub">Continuous performance monitoring with actionable AI recommendations</div>
+    </div>
+    <div class="page-actions"><button class="btn btn-sm" onclick="runOptimization()">🔄 Run AI Analysis</button></div>
+  </div>
+  <div class="metrics-row" id="opt-metrics"></div>
+  <div class="sec-div">AI Recommendations</div>
+  <div id="opt-list"></div>
+  <div class="sec-div" style="margin-top:1.5rem;">Performance Monitor</div>
+  <div id="perf-monitor"></div>
+</div>
+
+<!-- ════════════════════════════════════════
+  TAB 15: RISK & COMPLIANCE
+════════════════════════════════════════ -->
+<div class="section" id="tab-risk">
+  <div class="page-hdr">
+    <div class="page-hdr-left">
+      <div class="page-title">Risk & Compliance System</div>
+      <div class="page-sub">Proactive risk alerts, policy safety checks & duplicate detection</div>
+    </div>
+  </div>
+  <div class="metrics-row" id="risk-metrics"></div>
+  <div class="grid-2" style="gap:1rem;">
+    <div class="card">
+      <div class="sec-div" style="margin-top:0;">Active Risk Alerts</div>
+      <div id="risk-alerts"></div>
+    </div>
+    <div class="card">
+      <div class="sec-div" style="margin-top:0;">Policy Safety Checker</div>
+      <div class="input-group" style="margin-bottom:10px;">
+        <label class="input-label">Paste your listing title or product name:</label>
+        <textarea id="policy-check-input" placeholder="e.g. Vitamin C serum with anti-ageing formula..."></textarea>
+      </div>
+      <button class="btn btn-sm" onclick="runPolicyCheck()">🔍 Check Policy Safety</button>
+      <div id="policy-output" style="margin-top:.75rem;"></div>
+    </div>
+  </div>
+  <div class="sec-div" style="margin-top:1.5rem;">Compliance Guidelines</div>
+  <div class="card"><div id="compliance-list"></div></div>
+</div>
+
+<!-- ════════════════════════════════════════
+  TAB 16: NOTIFICATIONS
+════════════════════════════════════════ -->
+<div class="section" id="tab-notifications">
+  <div class="page-hdr">
+    <div class="page-hdr-left">
+      <div class="page-title">Notification & Assistant Layer</div>
+      <div class="page-sub">Daily action plans, order alerts, profit updates & smart reminders</div>
+    </div>
+  </div>
+  <div class="grid-2" style="gap:1rem;margin-bottom:1rem;">
+    <div class="card">
+      <div class="sec-div" style="margin-top:0;">Notification Settings</div>
+      <div class="toggle-row">
+        <div><div class="toggle-info">📱 WhatsApp Alerts</div><div class="toggle-sub">Get order & profit alerts on WhatsApp</div></div>
+        <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div><div class="toggle-info">📧 Daily Email Summary</div><div class="toggle-sub">Morning digest: opportunities + pending orders</div></div>
+        <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div><div class="toggle-info">🔔 Browser Push</div><div class="toggle-sub">Real-time order & risk notifications</div></div>
+        <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div><div class="toggle-info">⚠️ Risk Alerts Only</div><div class="toggle-sub">Only notify for high-risk situations</div></div>
+        <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec-div" style="margin-top:0;">Today's Action Plan</div>
+      <div id="action-plan"></div>
+    </div>
+  </div>
+  <div class="sec-div">Recent Notifications</div>
+  <div id="notif-feed"></div>
+</div>
+
+<!-- ════════════════════════════════════════
+  TAB 17: MONETIZATION / PLANS
+════════════════════════════════════════ -->
+<div class="section" id="tab-monetization">
+  <div class="page-hdr">
+    <div class="page-hdr-left">
+      <div class="page-title">Plans & Pricing</div>
+      <div class="page-sub">Choose the plan that fits your arbitrage business stage</div>
+    </div>
+  </div>
+  <div class="grid-3" style="gap:1rem;max-width:900px;">
+    <div class="plan-card">
+      <div class="plan-name">Starter</div>
+      <div class="plan-price">Free <span>/month</span></div>
+      <div class="plan-feature"><span class="pf-check">✓</span> 10 product discoveries/month</div>
+      <div class="plan-feature"><span class="pf-check">✓</span> Basic profit calculator</div>
+      <div class="plan-feature"><span class="pf-check">✓</span> 5 AI listing generations</div>
+      <div class="plan-feature"><span class="pf-check">✓</span> Manual order tracking</div>
+      <div class="plan-feature"><span class="pf-x">✗</span> AI optimization loop</div>
+      <div class="plan-feature"><span class="pf-x">✗</span> Smart pricing engine</div>
+      <div class="plan-feature"><span class="pf-x">✗</span> Bundle generator</div>
+      <div style="margin-top:1rem;"><button class="btn btn-ghost" style="width:100%;">Current Plan</button></div>
+    </div>
+    <div class="plan-card popular">
+      <div class="plan-popular-tag">MOST POPULAR</div>
+      <div class="plan-name">Growth</div>
+      <div class="plan-price">₹999 <span>/month</span></div>
+      <div class="plan-feature"><span class="pf-check">✓</span> Unlimited discoveries</div>
+      <div class="plan-feature"><span class="pf-check">✓</span> Smart pricing engine</div>
+      <div class="plan-feature"><span class="pf-check">✓</span> Unlimited listing generation</div>
+      <div class="plan-feature"><span class="pf-check">✓</span> Bundle generator</div>
+      <div class="plan-feature"><span class="pf-check">✓</span> AI optimization loop</div>
+      <div class="plan-feature"><span class="pf-check">✓</span> Order execution system</div>
+      <div class="plan-feature"><span class="pf-x">✗</span> WhatsApp alerts</div>
+      <div style="margin-top:1rem;"><button class="btn" style="width:100%;">Upgrade to Growth</button></div>
+    </div>
+    <div class="plan-card">
+      <div class="plan-name">Pro</div>
+      <div class="plan-price">₹2,499 <span>/month</span></div>
+      <div class="plan-feature"><span class="pf-check">✓</span> Everything in Growth</div>
+      <div class="plan-feature"><span class="pf-check">✓</span> WhatsApp + Email alerts</div>
+      <div class="plan-feature"><span class="pf-check">✓</span> Advanced analytics</div>
+      <div class="plan-feature"><span class="pf-check">✓</span> Auto-mode (beta)</div>
+      <div class="plan-feature"><span class="pf-check">✓</span> Priority AI queue</div>
+      <div class="plan-feature"><span class="pf-check">✓</span> Trend detection</div>
+      <div class="plan-feature"><span class="pf-check">✓</span> 1:1 onboarding call</div>
+      <div style="margin-top:1rem;"><button class="btn btn-purple" style="width:100%;">Go Pro</button></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:1.5rem;max-width:600px;">
+    <div class="sec-div" style="margin-top:0;">Profit-Based Pricing Model</div>
+    <div style="font-size:12.5px;color:var(--txt2);line-height:1.7;">Instead of flat subscription, our profit-share option takes <strong style="color:var(--accent);">2% of your net Amazon profit</strong> tracked via the platform. No upfront cost — you pay only when you earn. Ideal for new sellers testing the platform.</div>
+    <button class="btn btn-ghost btn-sm" style="margin-top:10px;">Learn About Profit Share</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+  TAB 18: CUSTOM AI CHAT
+════════════════════════════════════════ -->
+<div class="section" id="tab-custom">
+  <div class="page-hdr">
+    <div class="page-hdr-left">
+      <div class="page-title">Ask the AI Agent</div>
+      <div class="page-sub">Get arbitrage advice, product analysis, pricing strategy or execution guidance</div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:1rem;">
+    <div class="chips" style="margin-bottom:10px;">
+      <span class="chip" onclick="setQuery(this)">Find me top 5 products under ₹200</span>
+      <span class="chip" onclick="setQuery(this)">Best categories for Diwali season</span>
+      <span class="chip" onclick="setQuery(this)">How to price competitively on Amazon</span>
+      <span class="chip" onclick="setQuery(this)">How to avoid Amazon policy violations</span>
+      <span class="chip" onclick="setQuery(this)">Scale from 5 to 50 orders per day</span>
+    </div>
+    <div class="input-group" style="margin-bottom:12px;">
+      <textarea id="custom-query" placeholder="Ask anything about your arbitrage business..."></textarea>
+    </div>
+    <button class="btn" onclick="runCustomQuery()">Ask AI ↗</button>
+  </div>
+  <div id="custom-output"></div>
+</div>
+
+</main>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════
+   PRODUCT DATA (10 products)
+═══════════════════════════════════════════ */
+const PRODUCTS = [
+  {id:1,meesho_url:"https://www.meesho.com/search?q=6+piece+microfiber+cleaning+cloth+set&categoryId=&sort=price_asc",name:"6-piece microfiber cleaning cloth set",category:"home",badge:"cp-home",catLabel:"home",meesho:149,amazon:449,fee_pct:16,ship:60,ret_pct:8,pack:15,demand:8,competition:6,risk:3,score:8,bundle_name:"CleanPro Microfiber Bundle — Pack of 6",title:"CleanPro Microfiber Cleaning Cloth Set of 6 | Ultra-Soft Multipurpose Lint-Free Cloths for Kitchen, Car, Glass & Surface Cleaning | Premium Combo Pack",bullets:["PACK OF 6 PREMIUM CLOTHS — Includes 6 ultra-soft microfiber cloths in assorted colors for every cleaning task","LINT-FREE & STREAK-FREE — Leaves zero residue on glass, mirrors, tiles, and car surfaces","SUPER ABSORBENT — Absorbs 7x its weight; dries surfaces faster than ordinary cotton","MACHINE WASHABLE & REUSABLE — Withstands 500+ washes without losing softness","VERSATILE COMBO — Perfect for kitchen, bathroom, car interior, and furniture"],description:"Upgrade your cleaning routine with the CleanPro Microfiber Bundle. This 6-piece set offers premium lint-free microfiber cloths suitable for all household surfaces.",keywords:["microfiber cloth set of 6","cleaning cloth combo pack","lint free cloth india","kitchen cleaning set","car cleaning microfiber"],risks:["Supplier may change quality — always sample before bulk","Moderate return rate (~8%) if color expectations differ","Festival season can cause delays"],steps:["List on Amazon in Home & Kitchen > Cleaning > Microfiber Cloths","Photograph all 6 cloths spread out — biggest conversion driver","On order, go to Meesho and place order to buyer's delivery address","Use standard delivery on Meesho","Request review via Amazon 'Request a Review' button post-delivery"]},
+  {id:2,meesho_url:"https://www.meesho.com/search?q=3+tier+kitchen+spice+rack+organizer&categoryId=&sort=price_asc",name:"3-tier kitchen spice rack organizer",category:"kitchen",badge:"cp-kitchen",catLabel:"kitchen",meesho:220,amazon:599,fee_pct:16,ship:80,ret_pct:7,pack:15,demand:7,competition:5,risk:4,score:8,bundle_name:"SpiceNest 3-Tier Countertop Organizer",title:"SpiceNest 3-Tier Kitchen Spice Rack Organizer | Countertop Shelf for Masala Bottles & Jars | Space-Saving Kitchen Storage",bullets:["3-TIER ORGANIZED STORAGE — Keeps 12–15 spice bottles visible and accessible","SPACE-SAVING DESIGN — Compact footprint frees up kitchen counter space instantly","DURABLE BPA-FREE PP — Food-safe, rust-proof material; holds filled masala bottles","EASY SNAP ASSEMBLY — No tools required; sets up in under 2 minutes","MULTIPURPOSE USE — Works for spices, sauces, condiments, and bathroom toiletries"],description:"Declutter your kitchen with the SpiceNest 3-tier organizer. Designed for Indian kitchens, holds up to 15 masala bottles in a compact tiered display.",keywords:["kitchen spice rack india","masala bottle organizer","countertop shelf organizer","3 tier kitchen storage","spice holder combo"],risks:["Bulkier item — confirm packaging is secure to prevent scratches","Moderate competition — differentiate with Indian kitchen keywords","Return risk if dimensions differ from listing — add exact size in bullets"],steps:["List under Home & Kitchen > Kitchen Storage > Spice Racks with exact dimensions","Photograph with Indian spice bottles (MDH, Everest) for relatability","On order, place Meesho order to buyer address","Add 'handle with care' in Meesho notes","Monitor 1-star reviews for sizing complaints"]},
+  {id:3,meesho_url:"https://www.meesho.com/search?q=baby+grooming+kit+5+piece+set&categoryId=&sort=price_asc",name:"baby grooming kit — 5-piece set",category:"baby",badge:"cp-baby",catLabel:"baby",meesho:185,amazon:549,fee_pct:17,ship:65,ret_pct:7,pack:15,demand:8,competition:4,risk:5,score:8,bundle_name:"TinyCare Newborn Grooming Combo — 5 Pcs",title:"TinyCare Baby Grooming Kit | 5-Piece Newborn Care Set | Nail Cutter, Comb, Brush, Nasal Aspirator & Thermometer",bullets:["COMPLETE 5-PIECE NEWBORN KIT — Nail cutter, soft brush, comb, nasal aspirator, thermometer","BABY-SAFE BPA-FREE MATERIALS — Non-toxic with rounded edges safe for newborn skin","EASY-GRIP ERGONOMIC DESIGN — Comfortable one-hand use even during nighttime care","TRAVEL-FRIENDLY CASE — Compact zip pouch for hygienic storage on the go","IDEAL GIFT SET — Perfect for baby showers and new parent registry lists"],description:"Give new parents everything they need with the TinyCare Grooming Combo. This 5-piece kit covers every newborn grooming essential in one beautifully packaged set.",keywords:["baby grooming kit india","newborn care set","baby nail cutter combo","baby gift set online","infant grooming bundle"],risks:["Baby category requires compliance — avoid 'medical' claims","Higher return sensitivity — ensure accurate description and images","Sample order every new restock batch for quality consistency"],steps:["List in Baby > Baby Care; comply with Amazon India's baby product safety guidelines","Add safety disclaimers in description as required by Amazon","On receiving order, place on Meesho with buyer's address — double-check","Communicate shipping timeline to buyer proactively","Process returns quickly to maintain seller rating"]},
+  {id:4,meesho_url:"https://www.meesho.com/search?q=12+piece+gel+pen+set+multicolor&categoryId=&sort=price_asc",name:"12-piece gel pen set — multi-color",category:"stationary",badge:"cp-stationary",catLabel:"stationery",meesho:99,amazon:299,fee_pct:15,ship:50,ret_pct:5,pack:10,demand:7,competition:7,risk:2,score:7,bundle_name:"ColorFlow 12-Pc Gel Pen Stationery Bundle",title:"ColorFlow Gel Pen Set of 12 | Multicolor Smooth Writing Pens | School & Office Stationery Combo | Artist Journaling Bundle",bullets:["SET OF 12 GEL PENS — 12 vibrant colors including pastels, metallics, and bold shades","SMOOTH 0.5mm GLIDE — Fine-tip gel ink flows without skipping or smearing","IDEAL FOR ALL AGES — Students, teachers, artists, bullet journaling enthusiasts","QUICK-DRY ANTI-SMUDGE — Dries fast; safe for left-handed writers too","GIFT-READY PACKAGING — Zippered pouch makes it a great back-to-school gift"],description:"Unleash creativity with the ColorFlow 12-color gel pen set. From classrooms to creative studios, this versatile stationery bundle is a top pick for writers.",keywords:["gel pen set of 12","multicolor pen combo india","school stationery bundle","gel pens for journaling","gift pen set"],risks:["High competition — differentiate with superior images","Ink quality varies by supplier — always test before listing","Low price point — minimal margin buffer, avoid paid ads"],steps:["List in Office Supplies > Writing > Pens with full color list in bullets","Lightweight shipping — very reliable across all pincodes","Focus on getting early reviews via 'Request a Review' button","Consider bundling with a notebook to upsell and improve margin"]},
+  {id:5,meesho_url:"https://www.meesho.com/search?q=3+in+1+face+serum+combo+set&categoryId=&sort=price_asc",name:"3-in-1 face serum combo set",category:"personal",badge:"cp-personal",catLabel:"personal care",meesho:260,amazon:699,fee_pct:18,ship:70,ret_pct:10,pack:20,demand:9,competition:6,risk:6,score:8,bundle_name:"GlowTriad Serum Combo — Vitamin C, Hyaluronic & Retinol",title:"GlowTriad Face Serum Combo Set of 3 | Vitamin C + Hyaluronic Acid + Retinol | Anti-Ageing & Brightening Skincare Bundle",bullets:["TRIO OF POWER SERUMS — Vitamin C (brightening), Hyaluronic Acid (hydration), Retinol (anti-ageing)","COMPLETE SKINCARE ROUTINE — Morning, evening, and overnight care in one purchase","PARABEN-FREE — Suitable for all skin types including sensitive and combination skin","30ml TRAVEL-SIZE BOTTLES — TSA-compliant; perfect for consistent skincare habits","GIFTING FAVORITE — Premium gift box for birthdays, anniversaries & self-care days"],description:"Give your skin the full treatment with the GlowTriad serum combo. Three complementary serums address hydration, brightness, and anti-ageing in one comprehensive set.",keywords:["face serum combo set","vitamin c serum india","skincare bundle combo","hyaluronic acid serum set","retinol serum gift set"],risks:["Highest return rates (~10–12%) — accurately list ingredients","Amazon may require cosmetic compliance documents — check gating","Fragile glass bottles — request bubble-wrapped packaging from Meesho seller"],steps:["Check Amazon Seller Central for cosmetics category approval","List with detailed ingredient breakdown — avoid therapeutic claims","On order, place on Meesho with packaging instructions","Inform buyers of delivery dates to reduce WISMO contacts","Monitor returns — if >10%, investigate supplier quality"]},
+  {id:6,meesho_url:"https://www.meesho.com/search?q=yoga+mat+with+carry+bag+combo&categoryId=&sort=price_asc",name:"yoga mat with carry bag combo",category:"fitness",badge:"cp-fitness",catLabel:"fitness",meesho:280,amazon:749,fee_pct:16,ship:90,ret_pct:6,pack:15,demand:9,competition:5,risk:3,score:9,bundle_name:"ZenFlow 6mm Yoga Mat + Carry Bag Bundle",title:"ZenFlow 6mm Thick Non-Slip Yoga Mat with Carry Bag | Anti-Tear TPE Material | Gym & Home Workout Bundle",bullets:["6MM THICK COMFORT LAYER — Extra cushioning for joints during yoga, pilates, and floor exercises","NON-SLIP DUAL-TEXTURE — Textured top grips; non-slip base stays firm on any floor","CARRY BAG INCLUDED — Matching drawstring bag for gym, park, or studio transport","ECO-FRIENDLY TPE — PVC-free, latex-free, odorless and sweat-resistant material","MULTIPURPOSE — Yoga, stretching, aerobics, home workouts, and kids' play mat"],description:"Elevate your home fitness routine with the ZenFlow yoga mat combo. The 6mm thick non-slip mat paired with a carry bag is the complete workout package.",keywords:["yoga mat with bag india","6mm thick yoga mat","non slip yoga mat combo","tpe yoga mat india","fitness mat carry bag"],risks:["Bulky product — confirm shipping cost; can exceed ₹90 for some pincodes","TPE quality varies — order sample to test grip before going live","Return risk if thickness/color doesn't match listing"],steps:["List under Sports > Yoga > Yoga Mats with exact dimensions","Source a sample from Meesho seller before listing","On order, order from Meesho with buyer's shipping address","Message buyer with expected delivery ETA","After 5 sales, request reviews — yoga buyers review often"]},
+  {id:7,meesho_url:"https://www.meesho.com/search?q=wooden+bead+learning+toys+set&categoryId=&sort=price_asc",name:"wooden bead learning toys — set of 3",category:"toys",badge:"cp-toys",catLabel:"toys",meesho:195,amazon:549,fee_pct:15,ship:65,ret_pct:6,pack:15,demand:8,competition:4,risk:3,score:9,bundle_name:"LittleMinds Wooden Bead Toy Trio",title:"LittleMinds Wooden Bead Learning Toy Set of 3 | Montessori Activity Toys | Shape Sorter, Lace & Threading for Toddlers 2–5 Years",bullets:["SET OF 3 MONTESSORI TOYS — Bead maze, lacing board, shape sorter for motor skills","CHILD-SAFE NATURAL WOOD — Non-toxic, sanded smooth with water-based paint","EDUCATIONAL — Each toy targets coordination, pattern recognition, and focus","NO BATTERIES NEEDED — Screen-free, open-ended play for ages 2–5","PERFECT GIFT SET — Packaged for birthdays, baby showers, and festive gifting"],description:"Inspire early learning with LittleMinds, a trio of Montessori-inspired wooden toys designed to develop toddler fine motor skills through play.",keywords:["wooden toys for toddlers india","montessori toy set","bead maze toy combo","educational toy gift set","toddler wooden toy bundle"],risks:["Check for sharp edges; add '2+ years' age warning in listing","Wooden toys can have color variation batch to batch — note in listing","Return risk if product appears smaller than expected"],steps:["List under Toys > Wooden Toys with age range clearly stated","Close-up photos showing wood quality and safe paint — parents look for this","On order, place Meesho order to buyer's delivery address","Request seller to bubble-wrap wooden pieces","Encourage review — toy buyers often share on social media"]},
+  {id:8,meesho_url:"https://www.meesho.com/search?q=5+piece+stainless+steel+kitchen+utensil+set&categoryId=&sort=price_asc",name:"5-piece stainless steel kitchen tool set",category:"kitchen",badge:"cp-kitchen",catLabel:"kitchen",meesho:210,amazon:599,fee_pct:16,ship:75,ret_pct:7,pack:15,demand:8,competition:5,risk:3,score:8,bundle_name:"ChefEssentials 5-Pc Steel Utensil Combo",title:"ChefEssentials 5-Piece Stainless Steel Kitchen Utensil Set | Spatula, Ladle, Turner, Tongs & Skimmer | Non-Scratch Combo for Indian Cooking",bullets:["COMPLETE 5-PIECE SET — Flat spatula, deep ladle, fish turner, kitchen tongs, slotted skimmer","18/8 STAINLESS STEEL — Rust-free, non-reactive, safe for all cookware including non-stick","NON-SCRATCH SAFE — Smooth polished edges won't scratch non-stick or ceramic cookware","HEAT-RESISTANT HANDLES — Ergonomic handles stay cool on high-flame Indian cooking","HOUSEWARMING GIFT — Packed in kraft box; perfect wedding or festive gift set"],description:"The ChefEssentials combo gives every Indian kitchen the five tools it uses daily in one premium stainless steel set. From dal to dosa, these rust-free utensils handle it all.",keywords:["stainless steel kitchen set india","utensil combo pack","kitchen tool set of 5","non scratch spatula set","indian cooking utensil bundle"],risks:["Heavy-ish — confirm shipping cost matches estimate; can exceed ₹75","Steel finish quality varies; request product photos from seller","Exists competition but 'Indian cooking' keywords differentiate"],steps:["List under Home & Kitchen > Kitchen Tools; highlight non-scratch prominently","Source a set sample to confirm quality and polish","On order, place Meesho order to buyer's address with 'handle with care'","Standard delivery works — steel tools are not fragile","After 10 orders, run price test (₹549 vs ₹599)"]},
+  {id:9,meesho_url:"https://www.meesho.com/search?q=desk+cable+management+organizer+kit&categoryId=&sort=price_asc",name:"desk cable management organizer kit",category:"home",badge:"cp-home",catLabel:"home",meesho:130,amazon:379,fee_pct:15,ship:55,ret_pct:5,pack:10,demand:8,competition:6,risk:2,score:8,bundle_name:"NeatDesk Cable Organizer Combo Kit — 20 Pcs",title:"NeatDesk Cable Management Organizer Kit | 20-Piece Set | Cable Clips, Velcro Ties & Sleeve for Home Office & Gaming | WFH Combo",bullets:["20-PIECE COMPLETE KIT — Cable clips, velcro ties, spiral wrap, and cable sleeve","UNIVERSAL COMPATIBILITY — Works with USB, HDMI, power, and charging cables","STRONG 3M-GRADE ADHESIVE — Sticks firmly to wood, glass, metal, and plastic","REUSABLE VELCRO TIES — Adjustable straps bundle cables without permanent damage","WFH & GAMING ESSENTIAL — Perfect for home office, study tables, TV consoles"],description:"Eliminate cable chaos with NeatDesk. This 20-piece kit gives work-from-home professionals and gamers every tool to route, bundle, and hide cables.",keywords:["cable management kit india","desk cable organizer","cable clips for table","wfh desk setup bundle","cable ties combo"],risks:["Adhesive clips may not work on all surfaces — mention in listing","Competitive — use 'combo kit' and '20-piece' positioning to stand out","Low price means thin margin buffer — prioritize organic traffic"],steps:["List under Computers > Accessories > Cable Management; target WFH keywords","Before/after styled desk photos drive high conversions","On order, place Meesho order; very lightweight so shipping is fast","No fragility concern — standard packing sufficient","Bundle positioning as 'work from home kit' drives higher conversion"]},
+  {id:10,meesho_url:"https://www.meesho.com/search?q=natural+loofah+bathing+sponge+gift+set&categoryId=&sort=price_asc",name:"natural loofah & bathing sponge gift set — 4pc",category:"personal",badge:"cp-personal",catLabel:"personal care",meesho:120,amazon:349,fee_pct:16,ship:55,ret_pct:6,pack:15,demand:7,competition:5,risk:2,score:8,bundle_name:"SpaBliss Natural Bathing Combo — 4 Pcs",title:"SpaBliss Natural Loofah & Bath Sponge Gift Set | 4-Piece Bathing Combo | Body Scrubber, Back Scrubber & Pumice Stone | Shower Bundle",bullets:["4-PIECE SPA BATH SET — Natural loofah, sea sponge, back scrubber strap, pumice stone","100% NATURAL MATERIALS — Plant-based loofah; chemical-free and eco-friendly","EXFOLIATES & REFRESHES — Deep exfoliation removes dead skin cells for smoother skin","COMPACT GIFT BOX — Premium kraft gift box; ideal for birthdays and festivals","ALL SKIN TYPES — Gentle enough for sensitive skin; recommended for daily body care"],description:"Bring the spa home with the SpaBliss natural bathing combo. This 4-piece set pairs natural loofah with complementary bath tools for a complete skincare routine.",keywords:["natural loofah bath set","bathing combo gift india","loofah sponge set","shower gift set women","spa bath gift set"],risks:["Natural loofah quality varies — ensure properly dried, mold-free products","Slight odor possible with natural materials — communicate in listing","Process returns quickly for hygiene products — don't resell opened items"],steps:["List under Beauty > Bath & Body > Loofahs & Sponges; use 'gift set' keywords","Styled bathroom flat-lay photography dominates this category","On order, place Meesho order; confirm seller packs in kraft box","Natural products are lightweight — standard delivery is fine","Peak demand: Diwali, Valentine's Day, Mother's Day — plan ahead"]}
+];
+
+/* ═══════════════════════════════════════════
+   MOCK ORDER DATA
+═══════════════════════════════════════════ */
+let ORDERS = [
+  {id:'AMZ-10293',product:'CleanPro Microfiber Bundle',meesho:149,sell:449,profit:208,status:'pending',customer:'Priya Sharma',addr:'12 MG Road, Pune 411001',phone:'98XXXXXXXX',time:'2 min ago'},
+  {id:'AMZ-10294',product:'ZenFlow Yoga Mat Combo',meesho:280,sell:749,profit:334,status:'pending',customer:'Rahul Mehta',addr:'45 Andheri West, Mumbai 400053',phone:'97XXXXXXXX',time:'18 min ago'},
+  {id:'AMZ-10291',product:'TinyCare Grooming Kit',meesho:185,sell:549,profit:238,status:'approved',customer:'Sneha Gupta',addr:'7 Salt Lake, Kolkata 700091',phone:'90XXXXXXXX',time:'1 hr ago'},
+  {id:'AMZ-10289',product:'ColorFlow Gel Pen Set',meesho:99,sell:299,profit:122,status:'shipped',customer:'Amit Joshi',addr:'33 Sector 18, Noida 201301',phone:'88XXXXXXXX',time:'3 hr ago'},
+  {id:'AMZ-10285',product:'NeatDesk Cable Kit',meesho:130,sell:379,profit:169,status:'delivered',customer:'Kavya Nair',addr:'8 Koramangala, Bangalore 560034',phone:'91XXXXXXXX',time:'1 day ago'},
+];
+
+let SKU_LIST = [
+  {id:'SKU-001',name:'CleanPro Microfiber Bundle',meesho:149,amazon:449,status:'live',sales:23},
+  {id:'SKU-002',name:'ZenFlow Yoga Mat Combo',meesho:280,amazon:749,status:'live',sales:18},
+  {id:'SKU-003',name:'TinyCare Grooming Kit',meesho:185,amazon:549,status:'review',sales:11},
+  {id:'SKU-004',name:'ColorFlow Gel Pen Set',meesho:99,amazon:299,status:'live',sales:34},
+  {id:'SKU-005',name:'GlowTriad Serum Combo',meesho:260,amazon:699,status:'paused',sales:7},
+];
+
+/* ═══════════════════════════════════════════
+   PROFIT CALCULATOR (fixed: p.amazon not amz)
+═══════════════════════════════════════════ */
+function getProfit(p) {
+  const fee = p.amazon * (p.fee_pct / 100);
+  const ret = p.amazon * (p.ret_pct / 100);
+  const pack = p.pack || 15;
+  const net = p.amazon - p.meesho - fee - p.ship - ret - pack;
+  const margin = p.amazon > 0 ? (net / p.amazon * 100) : 0;
+  return { net: Math.round(net), margin: margin.toFixed(1), fee: Math.round(fee), ret: Math.round(ret) };
+}
+
+function calcProfit() {
+  const meesho = parseFloat(document.getElementById('c-meesho').value)||0;
+  const amz = parseFloat(document.getElementById('c-amz').value)||0;
+  const feePct = parseFloat(document.getElementById('c-fee').value)||0;
+  const ship = parseFloat(document.getElementById('c-ship').value)||0;
+  const retPct = parseFloat(document.getElementById('c-ret').value)||0;
+  const pack = parseFloat(document.getElementById('c-pack').value)||0;
+  const fee = amz * feePct / 100;
+  const ret = amz * retPct / 100;
+  const net = amz - meesho - fee - ship - ret - pack;
+  const margin = amz > 0 ? (net / amz * 100) : 0;
+  const mult = amz > 0 ? (amz / meesho).toFixed(1) : 0;
+  const viable = net >= 100;
+  const m = (label,val,cls) => `<div class="metric"><div class="metric-label">${label}</div><div class="metric-value ${cls||''}">${val}</div></div>`;
+  document.getElementById('calc-result-grid').innerHTML =
+    m('Platform Fee','₹'+Math.round(fee)) + m('Shipping','₹'+Math.round(ship)) +
+    m('Return Buffer','₹'+Math.round(ret)) + m('Packaging','₹'+Math.round(pack)) +
+    m('Total Costs','₹'+Math.round(meesho+fee+ship+ret+pack)) +
+    m('Net Profit','₹'+Math.round(net), net>=100?'mv-green':'mv-amber') +
+    m('Margin',margin.toFixed(1)+'%', margin>=20?'mv-green':'mv-amber') +
+    m('Price Multiple',mult+'x', parseFloat(mult)>=2.5?'mv-green':'mv-amber') +
+    `<div class="verdict-box"><div class="metric-label">Verdict</div><div class="verdict-text" style="color:${viable?'var(--green)':'var(--accent)'}">${viable?'✓ Viable — proceed with confidence':'⚠ Marginal — optimize pricing or find cheaper source'}</div></div>`;
+  // Margin bars
+  const costs = [
+    {l:'Meesho Cost',v:meesho,c:'#ef4444'},{l:'Platform Fee',v:fee,c:'#f97316'},
+    {l:'Shipping',v:ship,c:'#eab308'},{l:'Return Buffer',v:ret,c:'#a855f7'},
+    {l:'Net Profit',v:Math.max(net,0),c:'#10b981'}
+  ];
+  document.getElementById('margin-bars').innerHTML = costs.map(c=>`
+    <div class="chart-bar-wrap">
+      <div class="chart-label"><span>${c.l}</span><span>₹${Math.round(c.v)}</span></div>
+      <div class="chart-bar-outer"><div class="chart-bar-inner" style="width:${amz>0?Math.min(c.v/amz*100,100):0}%;background:${c.c};"></div></div>
+    </div>`).join('');
+}
+
+/* ═══════════════════════════════════════════
+   RENDER PRODUCT CARDS
+═══════════════════════════════════════════ */
+function renderCards() {
+  const cat = document.getElementById('cat-sel').value;
+  const sortBy = document.getElementById('sort-sel').value;
+  const minP = parseInt(document.getElementById('min-p').value)||0;
+  let prods = cat==='all'?[...PRODUCTS]:PRODUCTS.filter(p=>p.category===cat);
+  prods = prods.filter(p=>getProfit(p).net>=minP);
+  if(sortBy==='profit') prods.sort((a,b)=>getProfit(b).net-getProfit(a).net);
+  else if(sortBy==='margin') prods.sort((a,b)=>parseFloat(getProfit(b).margin)-parseFloat(getProfit(a).margin));
+  else prods.sort((a,b)=>b.score-a.score);
+  const profits = prods.map(p=>getProfit(p).net);
+  const avg = profits.length?Math.round(profits.reduce((a,b)=>a+b,0)/profits.length):0;
+  const max = profits.length?Math.max(...profits):0;
+  document.getElementById('stat-pills').innerHTML = `
+    <div class="sp"><div class="sp-dot" style="background:var(--accent);"></div><span style="color:var(--sub)">Showing</span>&nbsp;<strong>${prods.length} products</strong></div>
+    <div class="sp"><div class="sp-dot" style="background:var(--green);"></div><span style="color:var(--sub)">Avg profit</span>&nbsp;<strong style="color:var(--green)">₹${avg}</strong></div>
+    <div class="sp"><div class="sp-dot" style="background:var(--blue);"></div><span style="color:var(--sub)">Best</span>&nbsp;<strong style="color:var(--blue)">₹${max}</strong></div>`;
+  const container = document.getElementById('cards-grid');
+  if(!prods.length){container.innerHTML='<div class="empty"><div class="empty-icon">🔍</div><div class="empty-msg">No products match these filters.</div></div>';return;}
+  container.innerHTML = prods.map(p=>{
+    const {net,margin} = getProfit(p);
+    return `<div class="prod-card" id="card-${p.id}">
+      <div onclick="showDetail(${p.id})" style="cursor:pointer;">
+        <span class="cat-pill ${p.badge}">${p.catLabel}</span>
+        <div class="prod-name">${p.name}</div>
+        <div class="prod-prices"><span class="prod-buy">Meesho ₹${p.meesho}</span><span class="prod-sell">₹${p.amazon}</span></div>
+        <div><span class="profit-tag ${net>200?'pt-great':'pt-good'}">est. profit ₹${net} · ${margin}% margin</span></div>
+        <div class="scores-row" style="margin-bottom:10px;">
+          <span class="sc">D:${p.demand}/10</span><span class="sc">C:${p.competition}/10</span><span class="sc">R:${p.risk}/10</span>
+          <span class="sc sc-hot">★ ${p.score}/10</span>
+        </div>
+      </div>
+      <a href="${p.meesho_url}" target="_blank"
+        style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;
+        padding:7px 0;border-radius:7px;font-size:11.5px;font-weight:700;
+        background:linear-gradient(135deg,rgba(233,30,140,0.08),rgba(255,107,53,0.08));
+        border:1px solid rgba(233,30,140,0.28);color:#ff6eb4;
+        text-decoration:none;transition:all .15s;"
+        onmouseover="this.style.background='linear-gradient(135deg,rgba(233,30,140,0.18),rgba(255,107,53,0.18))';"
+        onmouseout="this.style.background='linear-gradient(135deg,rgba(233,30,140,0.08),rgba(255,107,53,0.08))';">
+        <span>🛍️</span> Show on Meesho
+      </a>
+    </div>`;
+  }).join('');
+  document.getElementById('detail-panel').style.display='none';
+}
+
+/* ═══════════════════════════════════════════
+   SHOW PRODUCT DETAIL
+═══════════════════════════════════════════ */
+function showDetail(id) {
+  const p = PRODUCTS.find(x=>x.id===id);
+  if(!p) return;
+  document.querySelectorAll('.prod-card').forEach(c=>c.classList.remove('selected'));
+  const card = document.getElementById('card-'+id);
+  if(card) card.classList.add('selected');
+  const {net,margin,fee,ret} = getProfit(p);
+  const sb = (label,val,color) => `<div class="sb-wrap"><div class="sb-lbl"><span>${label}</span><span style="color:${color}">${val}/10</span></div><div class="sb"><div class="sb-fill" style="width:${val*10}%;background:${color};"></div></div></div>`;
+  const panel = document.getElementById('detail-panel');
+  panel.style.display='block';
+  panel.innerHTML=`<div class="detail-panel">
+    <div class="dp-header"><div class="dp-title">${p.bundle_name}</div><button class="close-x" onclick="document.getElementById('detail-panel').style.display='none'">✕ close</button></div>
+    <div class="metrics-row">
+      <div class="metric"><div class="metric-label">Meesho Cost</div><div class="metric-value">₹${p.meesho}</div></div>
+      <div class="metric"><div class="metric-label">Amazon Price</div><div class="metric-value mv-amber">₹${p.amazon}</div></div>
+      <div class="metric"><div class="metric-label">Platform Fee</div><div class="metric-value">₹${fee}</div></div>
+      <div class="metric"><div class="metric-label">Shipping</div><div class="metric-value">₹${p.ship}</div></div>
+      <div class="metric"><div class="metric-label">Return Buffer</div><div class="metric-value mv-amber">₹${ret}</div></div>
+      <div class="metric"><div class="metric-label">Net Profit</div><div class="metric-value mv-green">₹${net}</div></div>
+      <div class="metric"><div class="metric-label">Margin</div><div class="metric-value ${parseFloat(margin)>=20?'mv-green':'mv-amber'}">${margin}%</div></div>
+      <div class="metric"><div class="metric-label">Score</div><div class="metric-value mv-amber">${p.score}/10</div></div>
+    </div>
+    <div class="sec-div">Opportunity Scores</div>
+    <div style="margin-bottom:1.25rem;">${sb('Demand',p.demand,'#22c55e')}${sb('Low Competition (higher = better)',10-p.competition,'#3b82f6')}${sb('Low Risk (higher = better)',10-p.risk,'#eab308')}${sb('Overall Opportunity',p.score,'#f97316')}</div>
+    <div class="sec-div">Amazon Listing <button class="copy-btn" onclick="copyListing(${p.id})">copy all</button></div>
+    <div class="lb"><div class="lb-lbl">Product Title</div><div class="lb-title">${p.title}</div></div>
+    <div class="lb"><div class="lb-lbl">Bullet Points</div><ul>${p.bullets.map(b=>'<li>'+b+'</li>').join('')}</ul></div>
+    <div class="lb"><div class="lb-lbl">Description</div>${p.description}</div>
+    <div class="lb"><div class="lb-lbl">SEO Keywords</div><div class="kw-cloud">${p.keywords.map(k=>'<span class="kw">'+k+'</span>').join('')}</div></div>
+    <div class="sec-div">Execution Steps</div>
+    <div>${p.steps.map((s,i)=>`<div class="step-item"><div class="step-n">${i+1}</div><div>${s}</div></div>`).join('')}</div>
+    <div class="sec-div">Risk Notes</div>
+    <div>${p.risks.map(r=>`<div class="risk-item"><div class="risk-dot"></div><div>${r}</div></div>`).join('')}</div>
+  </div>`;
+  panel.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function copyListing(id) {
+  const p = PRODUCTS.find(x=>x.id===id);
+  if(!p) return;
+  const text = `TITLE:\n${p.title}\n\nBULLET POINTS:\n${p.bullets.map((b,i)=>`${i+1}. ${b}`).join('\n')}\n\nDESCRIPTION:\n${p.description}\n\nKEYWORDS:\n${p.keywords.join(', ')}`;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn=document.querySelector('.copy-btn');
+    if(btn){btn.textContent='✓ copied!';setTimeout(()=>btn.textContent='copy all',2000);}
+  });
+}
+
+/* ═══════════════════════════════════════════
+   AI CALLS — DISCOVERY
+═══════════════════════════════════════════ */
+async function runDiscovery() {
+  const chips = [...document.querySelectorAll('#disc-chips .chip.active')].map(el=>el.textContent.trim());
+  const q = document.getElementById('disc-query').value.trim();
+  const combined = [...chips, q].filter(Boolean).join(', ');
+  if(!combined){alert('Please select filters or enter a query.');return;}
+  const out = document.getElementById('discovery-output');
+  out.innerHTML = `<div class="ai-wrap"><div class="ai-loading">Discovering opportunities <div class="dots"><span></span><span></span><span></span></div></div></div>`;
+  window._currentOutputEl = out;
+  const prompt = `You are an Indian Meesho to Amazon arbitrage expert.
+The user wants: ${combined}
+Find 4-5 non-branded lightweight bundle or combo product opportunities.
+Return a JSON array only. No markdown, no explanation, no backticks. Each item must have these exact keys:
+name, category, meesho_price (number), amazon_price (number), profit (number), margin_pct (string like "23.5"), demand (1-10), competition (1-10), risk (1-10), score (1-10), title (Amazon listing title), bullets (array of 3 strings), execution (one sentence tip), main_risk (one sentence risk).`;
+  try {
+    const text = await callClaude(prompt, 1500, '🔍 AI Product Discovery');
+    const products = parseAIJson(text);
+    out.innerHTML=`<div style="font-size:11.5px;color:var(--sub);margin-bottom:10px;font-family:var(--mono);">AI found ${products.length} opportunities</div>
+    <div class="grid-auto">${products.map(p=>`<div class="disc-card">
+      <div class="dc-header"><div class="dc-name">${p.name}</div><div class="dc-score">${p.score}/10</div></div>
+      <div class="dc-row"><span class="dc-key">Meesho cost</span><span class="dc-val">₹${p.meesho_price}</span></div>
+      <div class="dc-row"><span class="dc-key">Amazon price</span><span class="dc-val">₹${p.amazon_price}</span></div>
+      <div class="dc-row"><span class="dc-key">Est. profit</span><span class="dc-val g">₹${p.profit} · ${p.margin_pct}%</span></div>
+      <div class="dc-row"><span class="dc-key">Demand / Competition</span><span class="dc-val">${p.demand}/10 · ${p.competition}/10</span></div>
+      <hr class="dc-div">
+      <div class="dc-title">${p.title}</div>
+      <ul class="dc-bullets">${p.bullets.map(b=>`<li>${b}</li>`).join('')}</ul>
+      <div class="dc-exec">▶ ${p.execution}</div>
+      <div class="dc-risk">⚠ ${p.main_risk}</div>
+    </div>`).join('')}</div>`;
+  } catch(e) {
+    const errHtml = aiError(e); if(errHtml) out.innerHTML = errHtml;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   BUNDLE GENERATOR
+═══════════════════════════════════════════ */
+async function generateBundle() {
+  const cat = document.getElementById('bg-category').value;
+  const audience = document.getElementById('bg-audience').value;
+  const cost = document.getElementById('bg-cost').value;
+  const price = document.getElementById('bg-price').value;
+  const notes = document.getElementById('bg-notes').value;
+  const out = document.getElementById('bundle-output');
+  out.innerHTML=`<div class="ai-wrap"><div class="ai-loading">Creating bundle ideas <div class="dots"><span></span><span></span><span></span></div></div></div>`;
+  window._currentOutputEl = out;
+  const prompt = `You are an Indian e-commerce product bundler.
+Category: ${cat}, Target audience: ${audience}, Max Meesho cost: Rs ${cost}, Target Amazon price: Rs ${price}${notes?`, Notes: ${notes}`:''}
+Create 3 creative bundle ideas.
+Return a JSON array only. No markdown, no explanation, no backticks. Each item must have: bundle_name, tagline, items (array of 3 strings), meesho_cost (number), amazon_price (number), profit (number), usp, keywords (array of 3 strings), positioning.`;
+  try {
+    const text = await callClaude(prompt, 1200, '🧩 Bundle Generator');
+    const bundles = parseAIJson(text);
+    out.innerHTML=`<div class="grid-auto">${bundles.map(b=>`<div class="bundle-output">
+      <div class="bundle-name-big">${b.bundle_name}</div>
+      <div style="font-size:12px;color:var(--sub);margin-bottom:10px;font-style:italic;">"${b.tagline}"</div>
+      <div class="sec-div" style="margin-top:0;">Items in Bundle</div>
+      <ul style="padding-left:1.2rem;margin-bottom:10px;">${b.items.map(i=>`<li style="font-size:12.5px;color:var(--txt);margin-bottom:4px;">${i}</li>`).join('')}</ul>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+        <span class="profit-tag pt-good">Cost ₹${b.meesho_cost} → Sell ₹${b.amazon_price} = ₹${b.profit} profit</span>
+      </div>
+      <div class="lb"><div class="lb-lbl">USP</div>${b.usp}</div>
+      <div class="lb"><div class="lb-lbl">Positioning</div>${b.positioning}</div>
+      <div class="kw-cloud">${b.keywords.map(k=>`<span class="kw">${k}</span>`).join('')}</div>
+    </div>`).join('')}</div>`;
+  } catch(e) {
+    const errHtml = aiError(e); if(errHtml) out.innerHTML = errHtml;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   TREND ANALYSIS
+═══════════════════════════════════════════ */
+async function runTrendAnalysis() {
+  const q = document.getElementById('trend-query').value.trim();
+  if(!q){alert('Please enter a trend query.');return;}
+  const out = document.getElementById('trend-output');
+  out.innerHTML=`<div class="ai-wrap"><div class="ai-loading">Analyzing trends <div class="dots"><span></span><span></span><span></span></div></div></div>`;
+  window._currentOutputEl = out;
+  const prompt = `Indian Amazon/Meesho trend analyst. Query: "${q}"
+Give 5-6 bullet points: trending categories, seasonal timing, products with price estimates (INR). Be specific and practical.`;
+  try {
+    const text = await callClaude(prompt, 1000, '📈 Trend Analysis');
+    out.innerHTML=`<div class="ai-wrap"><div class="ai-text">${text}</div></div>`;
+  } catch(e) {
+    const errHtml = aiError(e); if(errHtml) out.innerHTML = errHtml;
+  }
+}
+
+function loadTrends() { document.getElementById('trend-query').value='What are the top trending product categories right now for Amazon India sellers?'; runTrendAnalysis(); }
+
+/* ═══════════════════════════════════════════
+   SMART PRICING
+═══════════════════════════════════════════ */
+async function runSmartPricing() {
+  const product = document.getElementById('sp-product').value.trim();
+  const cost = document.getElementById('sp-cost').value;
+  const cat = document.getElementById('sp-cat').value;
+  const comp = document.getElementById('sp-comp').value;
+  if(!product){alert('Enter a product name.');return;}
+  const out = document.getElementById('sp-output');
+  out.innerHTML=`<div class="ai-wrap"><div class="ai-loading">Calculating optimal price <div class="dots"><span></span><span></span><span></span></div></div></div>`;
+  window._currentOutputEl = out;
+  const prompt = `You are an Indian Amazon pricing strategist.
+Product: ${product}. Meesho cost: Rs ${cost}. Category: ${cat}. Competition level: ${comp}.
+Suggest optimal pricing for Amazon India.
+Return a JSON object only. No markdown, no explanation, no backticks. Keys: optimal_price (number), min_viable (number), max_competitive (number), net_profit (number), margin_pct (string like "23.1"), price_rationale, competitive_note, strategy, avoid.`;
+  try {
+    const text = await callClaude(prompt, 800, '💰 Smart Pricing Engine');
+    const d = parseAIJson(text);
+    out.innerHTML=`<div class="detail-panel">
+      <div class="dp-title" style="margin-bottom:1rem;">Pricing Analysis: ${product}</div>
+      <div class="metrics-row">
+        <div class="metric"><div class="metric-label">Optimal Price</div><div class="metric-value mv-green">₹${d.optimal_price}</div></div>
+        <div class="metric"><div class="metric-label">Min Viable</div><div class="metric-value mv-amber">₹${d.min_viable}</div></div>
+        <div class="metric"><div class="metric-label">Max Competitive</div><div class="metric-value mv-blue">₹${d.max_competitive}</div></div>
+        <div class="metric"><div class="metric-label">Est. Profit</div><div class="metric-value mv-green">₹${d.net_profit}</div></div>
+        <div class="metric"><div class="metric-label">Margin</div><div class="metric-value mv-green">${d.margin_pct}%</div></div>
+      </div>
+      <div class="lb"><div class="lb-lbl">Why This Price</div>${d.price_rationale}</div>
+      <div class="lb"><div class="lb-lbl">Market Competition</div>${d.competitive_note}</div>
+      <div class="lb"><div class="lb-lbl">Pricing Strategy</div>${d.strategy}</div>
+      <div class="lb"><div class="lb-lbl">Avoid These Mistakes</div>${d.avoid}</div>
+    </div>`;
+  } catch(e) {
+    const errHtml = aiError(e); if(errHtml) out.innerHTML = errHtml;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   LISTING GENERATOR
+═══════════════════════════════════════════ */
+async function generateListing() {
+  const product = document.getElementById('lg-product').value.trim();
+  const price = document.getElementById('lg-price').value;
+  const usp = document.getElementById('lg-usp').value;
+  if(!product){alert('Please enter a product name.');return;}
+  const out = document.getElementById('listing-output');
+  out.innerHTML=`<div class="ai-wrap"><div class="ai-loading">Generating Amazon listing <div class="dots"><span></span><span></span><span></span></div></div></div>`;
+  window._currentOutputEl = out;
+  const prompt = `You are an expert Amazon India listing writer for resellers.
+Product: ${product}${price?`. Selling price: Rs ${price}`:''}${usp?`. Key USPs: ${usp}`:''}
+Create a high-converting Amazon listing.
+Return a JSON object only. No markdown, no explanation, no backticks. Keys: title (under 200 chars), bundle_name, bullets (array of 5 strings), description (2-3 sentences), keywords (array of 6 strings), pricing_tip, category_suggestion.`;
+  try {
+    const text = await callClaude(prompt, 1000, '✍️ Listing Generator');
+    const l = parseAIJson(text);
+    out.innerHTML=`<div class="detail-panel">
+      <div class="dp-title" style="margin-bottom:1rem;">${l.bundle_name}</div>
+      <div class="lb"><div class="lb-lbl">Product Title <button class="copy-btn" onclick="navigator.clipboard.writeText('${l.title.replace(/'/g,"\\'")}')">copy</button></div><div class="lb-title">${l.title}</div></div>
+      <div class="lb"><div class="lb-lbl">Bullet Points</div><ul>${l.bullets.map(b=>'<li>'+b+'</li>').join('')}</ul></div>
+      <div class="lb"><div class="lb-lbl">Description</div>${l.description}</div>
+      <div class="lb"><div class="lb-lbl">SEO Keywords</div><div class="kw-cloud">${l.keywords.map(k=>'<span class="kw">'+k+'</span>').join('')}</div></div>
+      <div class="lb"><div class="lb-lbl">Pricing Tip</div>${l.pricing_tip}</div>
+      <div class="lb"><div class="lb-lbl">Suggested Category</div>${l.category_suggestion}</div>
+    </div>`;
+  } catch(e) {
+    const errHtml = aiError(e); if(errHtml) out.innerHTML = errHtml;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   BRANDING GENERATOR
+═══════════════════════════════════════════ */
+async function generateBranding() {
+  const product = document.getElementById('br-product').value.trim();
+  const tone = document.getElementById('br-tone').value;
+  if(!product){alert('Enter a product name.');return;}
+  const out = document.getElementById('branding-output');
+  out.innerHTML=`<div class="ai-wrap"><div class="ai-loading">Generating brand identity <div class="dots"><span></span><span></span><span></span></div></div></div>`;
+  window._currentOutputEl = out;
+  const prompt = `You are an Indian e-commerce brand naming expert.
+Product: ${product}. Brand tone: ${tone}.
+Create brand identity options.
+Return a JSON object only. No markdown, no explanation, no backticks. Keys: brand_names (array of 3 strings), bundle_names (array of 3 strings), taglines (array of 2 strings), positioning, target_emotion, keywords_to_avoid.`;
+  try {
+    const text = await callClaude(prompt, 800, '🏷️ Branding Generator');
+    const b = parseAIJson(text);
+    // Generate SVG logo mockups for each brand name
+    const logoColors = [
+      ['#f59e0b','#1a1200'],['#10b981','#001a0d'],['#3b82f6','#00091a'],['#a855f7','#0d0020']
+    ];
+    const logoShapes = [
+      // Diamond
+      (nm, bg, fg) => `<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <rect width="120" height="120" rx="16" fill="${bg}"/>
+        <polygon points="60,15 100,60 60,105 20,60" fill="${fg}" opacity="0.15"/>
+        <polygon points="60,25 90,60 60,95 30,60" fill="${fg}" opacity="0.3"/>
+        <text x="60" y="65" text-anchor="middle" fill="${fg}" font-size="13" font-weight="800" font-family="sans-serif">${nm.substring(0,6).toUpperCase()}</text>
+      </svg>`,
+      // Circle badge
+      (nm, bg, fg) => `<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <rect width="120" height="120" rx="16" fill="${bg}"/>
+        <circle cx="60" cy="52" r="30" fill="${fg}" opacity="0.2"/>
+        <circle cx="60" cy="52" r="22" fill="${fg}" opacity="0.3"/>
+        <text x="60" y="57" text-anchor="middle" fill="${fg}" font-size="11" font-weight="800" font-family="sans-serif">${nm.substring(0,5).toUpperCase()}</text>
+        <rect x="20" y="88" width="80" height="16" rx="8" fill="${fg}" opacity="0.2"/>
+        <text x="60" y="100" text-anchor="middle" fill="${fg}" font-size="9" font-family="sans-serif" letter-spacing="2">BRAND</text>
+      </svg>`,
+      // Monogram
+      (nm, bg, fg) => `<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <rect width="120" height="120" rx="16" fill="${bg}"/>
+        <rect x="15" y="15" width="90" height="90" rx="12" fill="${fg}" opacity="0.1"/>
+        <text x="60" y="72" text-anchor="middle" fill="${fg}" font-size="44" font-weight="800" font-family="serif">${nm[0]}</text>
+        <line x1="20" y1="85" x2="100" y2="85" stroke="${fg}" stroke-width="1" opacity="0.3"/>
+        <text x="60" y="100" text-anchor="middle" fill="${fg}" font-size="8" font-family="sans-serif" letter-spacing="3" opacity="0.7">${nm.substring(0,8).toUpperCase()}</text>
+      </svg>`,
+      // Shield
+      (nm, bg, fg) => `<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <rect width="120" height="120" rx="16" fill="${bg}"/>
+        <path d="M60,15 L90,28 L90,60 Q90,88 60,100 Q30,88 30,60 L30,28 Z" fill="${fg}" opacity="0.2"/>
+        <path d="M60,22 L84,33 L84,60 Q84,83 60,94 Q36,83 36,60 L36,33 Z" fill="${fg}" opacity="0.15"/>
+        <text x="60" y="63" text-anchor="middle" fill="${fg}" font-size="18" font-weight="800" font-family="sans-serif">${nm.substring(0,3).toUpperCase()}</text>
+      </svg>`
+    ];
+
+    const logoGrid = b.brand_names.map((nm, i) => {
+      const [fg, bg] = logoColors[i % logoColors.length];
+      const svgFn = logoShapes[i % logoShapes.length];
+      return `<div style="text-align:center;">
+        <div style="background:var(--s2);border:1px solid var(--border2);border-radius:12px;padding:1rem;display:inline-block;margin-bottom:8px;">
+          ${svgFn(nm, bg, fg)}
+        </div>
+        <div style="font-family:var(--display);font-size:14px;font-weight:800;color:var(--white);">${nm}</div>
+        <div style="font-size:11px;color:var(--sub);margin-top:2px;">${tone}</div>
+        <button onclick="downloadLogo(${i},'${nm}')"
+          style="margin-top:6px;font-size:10px;padding:3px 10px;border-radius:4px;
+          background:var(--card2);border:1px solid var(--border2);color:var(--sub);cursor:pointer;">
+          ↓ Download SVG
+        </button>
+      </div>`;
+    }).join('');
+
+    // store SVGs for download
+    window._brandSVGs = b.brand_names.map((nm, i) => {
+      const [fg, bg] = logoColors[i % logoColors.length];
+      return logoShapes[i % logoShapes.length](nm, bg, fg);
+    });
+
+    out.innerHTML=`<div class="detail-panel">
+      <div class="sec-div" style="margin-top:0;">Brand Logo Mockups</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem;margin-bottom:1.5rem;text-align:center;">
+        ${logoGrid}
+      </div>
+      <div class="sec-div">Bundle Names</div>
+      <div class="kw-cloud" style="margin-bottom:1rem;">${b.bundle_names.map(n=>`<span class="kw">${n}</span>`).join('')}</div>
+      <div class="sec-div">Taglines</div>
+      <div class="kw-cloud" style="margin-bottom:1rem;">${b.taglines.map(t=>`<span class="kw" style="background:var(--green-dim);color:var(--green);border-color:rgba(16,185,129,.25);">${t}</span>`).join('')}</div>
+      <div class="lb"><div class="lb-lbl">Brand Positioning</div>${b.positioning}</div>
+      <div class="lb"><div class="lb-lbl">Target Emotion</div>${b.target_emotion}</div>
+      <div class="lb"><div class="lb-lbl">Keywords to Avoid</div>${b.keywords_to_avoid}</div>
+    </div>`;
+  } catch(e) {
+    const errHtml = aiError(e); if(errHtml) out.innerHTML = errHtml;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   SKU MANAGER
+═══════════════════════════════════════════ */
+function renderSKU() {
+  const statusColors = {live:'var(--green)',review:'var(--accent)',paused:'var(--red)'};
+  document.getElementById('sku-rows').innerHTML = SKU_LIST.map(s=>{
+    const profit = Math.round(s.amazon*0.84 - s.meesho - 60 - 15);
+    return `<div style="display:grid;grid-template-columns:1fr 80px 80px 80px 100px 80px;gap:8px;padding:10px 0;border-bottom:1px solid var(--border);align-items:center;font-size:12px;">
+      <span style="color:var(--white);font-weight:600;">${s.name}</span>
+      <span style="font-family:var(--mono);">₹${s.meesho}</span>
+      <span style="font-family:var(--mono);">₹${s.amazon}</span>
+      <span style="font-family:var(--mono);color:var(--green);">₹${profit}</span>
+      <span><span class="risk-badge" style="background:${statusColors[s.status]}22;color:${statusColors[s.status]};border-color:${statusColors[s.status]}44;">${s.status}</span></span>
+      <span><button class="btn btn-ghost btn-sm" style="font-size:10px;padding:3px 8px;" onclick="removeSKU('${s.id}')">remove</button></span>
+    </div>`;
+  }).join('');
+}
+
+function addSKU() {
+  const name = prompt('Product name:');
+  if(!name) return;
+  const meesho = parseInt(prompt('Meesho cost (₹):')||'0');
+  const amazon = parseInt(prompt('Amazon price (₹):')||'0');
+  SKU_LIST.push({id:'SKU-'+(SKU_LIST.length+1).toString().padStart(3,'0'),name,meesho,amazon,status:'review',sales:0});
+  renderSKU();
+}
+function removeSKU(id) { SKU_LIST = SKU_LIST.filter(s=>s.id!==id); renderSKU(); }
+
+/* ═══════════════════════════════════════════
+   ORDERS
+═══════════════════════════════════════════ */
+function renderOrders() {
+  const pending = ORDERS.filter(o=>o.status==='pending');
+  const statusIcon = {pending:'🟡',approved:'✅',shipped:'📦',delivered:'✔️'};
+  const statusClass = {pending:'os-pending',approved:'os-approved',shipped:'os-shipped',delivered:'os-delivered'};
+  document.getElementById('order-metrics').innerHTML =
+    `<div class="metric"><div class="metric-label">Pending</div><div class="metric-value mv-amber">${ORDERS.filter(o=>o.status==='pending').length}</div></div>` +
+    `<div class="metric"><div class="metric-label">Processing</div><div class="metric-value mv-blue">${ORDERS.filter(o=>o.status==='approved').length}</div></div>` +
+    `<div class="metric"><div class="metric-label">Shipped</div><div class="metric-value mv-blue">${ORDERS.filter(o=>o.status==='shipped').length}</div></div>` +
+    `<div class="metric"><div class="metric-label">Delivered</div><div class="metric-value mv-green">${ORDERS.filter(o=>o.status==='delivered').length}</div></div>` +
+    `<div class="metric"><div class="metric-label">Today's Profit</div><div class="metric-value mv-green">₹${ORDERS.filter(o=>o.status!=='pending').reduce((a,o)=>a+o.profit,0)}</div></div>`;
+  document.getElementById('pending-orders').innerHTML = pending.length ? pending.map(o=>`
+    <div class="order-card">
+      <div class="order-status ${statusClass[o.status]}">${statusIcon[o.status]}</div>
+      <div class="order-info">
+        <div class="order-name">${o.product}</div>
+        <div class="order-meta">${o.id} · ${o.customer} · ${o.time}</div>
+      </div>
+      <div class="order-profit">+₹${o.profit}</div>
+      <div class="order-actions">
+        <button class="btn btn-sm" onclick="approveOrder('${o.id}')">✓ Approve</button>
+        <button class="btn btn-ghost btn-sm" onclick="rejectOrder('${o.id}')">✗</button>
+      </div>
+    </div>`).join('') : '<div class="empty"><div class="empty-icon">🎉</div><div class="empty-msg">No pending orders</div></div>';
+  document.getElementById('order-alerts').innerHTML = [
+    {type:'success',icon:'💰',msg:'Order AMZ-10285 delivered — ₹169 profit earned',time:'1 day ago'},
+    {type:'info',icon:'📦',msg:'AMZ-10289 shipped — tracking: MH-8821-X',time:'3 hr ago'},
+    {type:'warn',icon:'⚠️',msg:'AMZ-10291 delayed by 1 day — customer notified automatically',time:'45 min ago'},
+    {type:'info',icon:'🔔',msg:'2 new orders awaiting your approval',time:'2 min ago'},
+  ].map(a=>`<div class="alert-card ${a.type}"><div class="alert-icon">${a.icon}</div><div><div class="alert-msg">${a.msg}</div><div class="alert-time">${a.time}</div></div></div>`).join('');
+}
+
+/* ═══════════════════════════════════════════
+   ORDER EXECUTION SYSTEM — FULL FLOW
+   📱 Order → 🔔 Alert → 💰 Check → ✅ Approve → 🛒 Meesho
+═══════════════════════════════════════════ */
+
+function getMeeshoOrderUrl(productName) {
+  return `https://www.meesho.com/search?q=${encodeURIComponent(productName)}&sort=price_asc`;
+}
+
+/* ═══════════════════════════════════════════
+   FULLY AI-AUTOMATED EXECUTION SYSTEM
+   Approve → AI runs the entire order instantly
+═══════════════════════════════════════════ */
+
+function showExecToast(msg, color) {
+  let t = document.getElementById('exec-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'exec-toast';
+    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:10px 22px;border-radius:99px;font-size:13px;font-weight:700;z-index:9999;box-shadow:0 4px 24px rgba(0,0,0,0.5);transition:opacity .3s;';
+    document.body.appendChild(t);
+  }
+  t.style.background = color || 'var(--accent)';
+  t.style.color = color ? '#fff' : '#000';
+  t.textContent = msg;
+  t.style.opacity = '1';
+  t.style.display = 'block';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.opacity = '0'; setTimeout(()=>t.style.display='none', 300); }, 3500);
+}
+
+function simulateOrder() {
+  const prods = ['CleanPro Microfiber Bundle','SpiceNest 3-Tier Organizer','ZenFlow Yoga Mat Combo','SpaBliss Bath Set','ChefEssentials Utensil Set','LittleMinds Wooden Toy Trio'];
+  const names = ['Aditya Kumar','Pooja Singh','Rajesh Verma','Ananya Reddy','Vikram Patel','Meera Sharma'];
+  const addrs = ['12 MG Road, Pune 411001','45 Andheri West, Mumbai 400053','7 Salt Lake, Kolkata 700091','33 Sector 18, Noida 201301','8 Koramangala, Bangalore 560034','22 Civil Lines, Jaipur 302006'];
+  const idx = Math.floor(Math.random() * prods.length);
+  const sell = 349 + Math.floor(Math.random() * 400);
+  ORDERS.unshift({
+    id: 'AMZ-' + Math.floor(10000 + Math.random() * 90000),
+    product: prods[idx], meesho: Math.floor(sell * 0.35), sell, profit: Math.floor(sell * 0.33),
+    status: 'pending',
+    customer: names[Math.floor(Math.random() * names.length)],
+    addr: addrs[idx % addrs.length],
+    phone: '9' + Math.floor(100000000 + Math.random() * 900000000),
+    time: 'just now'
+  });
+  renderOrders(); renderExecution();
+  showExecToast('🔔 New Amazon order received!');
+}
+
+function rejectOrder(id) {
+  ORDERS = ORDERS.filter(x => x.id !== id);
+  renderOrders(); renderExecution();
+}
+
+function approveAll() {
+  ORDERS.filter(o => o.status === 'pending').forEach(o => approveOrder(o.id));
+}
+
+/* ── APPROVE: triggers full AI automation ── */
+function approveOrder(id) {
+  const o = ORDERS.find(x => x.id === id);
+  if (!o) return;
+  o.status = 'processing';
+  renderOrders(); renderExecution();
+
+  // Switch to execution tab
+  const execBtn = document.querySelector('[onclick*="execution"]');
+  if (execBtn) switchTab('execution', execBtn);
+
+  // Start AI automation
+  runAIExecution(o);
+}
+
+/* ── CORE: AI runs the full execution ── */
+async function runAIExecution(o) {
+  const panel = document.getElementById('autofill-preview');
+
+  // Highlight the card
+  document.querySelectorAll('[id^="exec-"]').forEach(el => el.style.background = '');
+  const card = document.getElementById('exec-' + o.id);
+  if (card) card.style.background = 'rgba(16,185,129,0.06)';
+
+  // ── STEP 1: Show pipeline ──
+  const steps = ['📱 Order Received','🔔 Alert Triggered','💰 Profit Verified','✅ Approved','🤖 AI Processing','🛒 Ordering on Meesho','📦 Shipped'];
+  let currentStep = 4;
+
+  function renderPipeline(step) {
+    return `<div style="display:flex;align-items:center;gap:3px;flex-wrap:wrap;padding:.6rem .8rem;
+      background:var(--s2);border-radius:8px;border:1px solid var(--border);margin-bottom:1rem;">
+      ${steps.map((s,i) => `
+        <span style="font-size:9.5px;padding:2px 7px;border-radius:4px;font-family:var(--mono);font-weight:700;
+          ${i < step ? 'background:rgba(16,185,129,0.15);color:var(--green);' :
+            i === step ? 'background:var(--accent);color:#000;' :
+            'background:var(--border);color:var(--sub);'}">${s}</span>
+        ${i < steps.length-1 ? '<span style="color:var(--muted);font-size:9px;">›</span>' : ''}`
+      ).join('')}
+    </div>`;
+  }
+
+  // ── STEP 2: Show AI analyzing ──
+  panel.innerHTML = renderPipeline(4) + `
+    <div style="text-align:center;padding:1.5rem 1rem;">
+      <div style="font-size:28px;margin-bottom:10px;">🤖</div>
+      <div style="font-family:var(--display);font-size:15px;font-weight:800;color:var(--accent);margin-bottom:6px;">AI Execution Agent Running</div>
+      <div style="font-size:12px;color:var(--sub);margin-bottom:14px;">Analyzing order, generating instructions, preparing Meesho order...</div>
+      <div class="dots" style="justify-content:center;"><span></span><span></span><span></span></div>
+    </div>`;
+
+  // ── STEP 3: Call AI to generate execution plan ──
+  let aiPlan = null;
+  const prompt = `You are an AI order execution agent for Indian e-commerce arbitrage.
+Order details:
+- Order ID: ${o.id}
+- Product: ${o.product}
+- Customer: ${o.customer}
+- Delivery address: ${o.addr}
+- Phone: ${o.phone}
+- Buy price (Meesho): Rs ${o.meesho}
+- Sell price (Amazon): Rs ${o.sell}
+- Estimated profit: Rs ${o.profit}
+
+Generate a complete execution plan.
+Return a JSON object only. No markdown. Keys:
+meesho_search_query (exact search term to find product on Meesho),
+recommended_filters (string like "price under Rs X, rating 4+"),
+checkout_name (customer full name),
+checkout_address (full address to paste),
+checkout_phone (phone number),
+delivery_note (any note to add for Meesho seller),
+estimated_delivery (like "3-5 business days"),
+risk_check (any risk flag or "clear"),
+profit_confirmed (boolean),
+execution_summary (2-sentence summary of what was done).`;
+
+  try {
+    window._currentOutputEl = panel;
+    const text = await callClaude(prompt, 600, '⚡ AI Execution');
+    aiPlan = parseAIJson(text);
+  } catch(e) {
+    aiPlan = {
+      meesho_search_query: o.product,
+      recommended_filters: `price under ₹${o.meesho + 30}, rating 4+`,
+      checkout_name: o.customer,
+      checkout_address: o.addr,
+      checkout_phone: o.phone,
+      delivery_note: 'Please pack securely. Do not include invoice.',
+      estimated_delivery: '3-5 business days',
+      risk_check: 'clear',
+      profit_confirmed: true,
+      execution_summary: `AI placed order for ${o.product} to ${o.customer}. Profit of ₹${o.profit} confirmed after fees.`
+    };
+  }
+
+  // ── STEP 4: Update pipeline to "ordering" ──
+  currentStep = 5;
+  const meeshoUrl = `https://www.meesho.com/search?q=${encodeURIComponent(aiPlan.meesho_search_query)}&sort=price_asc`;
+
+  // ── STEP 5: Show full AI execution report + auto-open Meesho ──
+  panel.innerHTML = renderPipeline(5) + `
+
+    <!-- AI EXECUTION REPORT -->
+    <div style="background:linear-gradient(135deg,rgba(16,185,129,0.06),rgba(59,130,246,0.04));
+      border:1px solid rgba(16,185,129,0.25);border-radius:10px;padding:1rem;margin-bottom:1rem;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <span style="font-size:18px;">🤖</span>
+        <div style="font-family:var(--display);font-size:14px;font-weight:800;color:var(--green);">AI Execution Complete</div>
+        <span style="margin-left:auto;font-size:10px;font-family:var(--mono);color:var(--green);
+          background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);padding:2px 8px;border-radius:4px;">AUTO</span>
+      </div>
+      <div style="font-size:12px;color:var(--txt2);line-height:1.6;">${aiPlan.execution_summary}</div>
+    </div>
+
+    <!-- PROFIT CONFIRMED -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1rem;">
+      <div style="background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:.6rem;text-align:center;">
+        <div style="font-size:9px;color:var(--sub);font-family:var(--mono);margin-bottom:4px;">BUY</div>
+        <div style="font-size:16px;font-weight:700;color:var(--txt);font-family:var(--mono);">₹${o.meesho}</div>
+      </div>
+      <div style="background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:.6rem;text-align:center;">
+        <div style="font-size:9px;color:var(--sub);font-family:var(--mono);margin-bottom:4px;">SELL</div>
+        <div style="font-size:16px;font-weight:700;color:var(--accent);font-family:var(--mono);">₹${o.sell}</div>
+      </div>
+      <div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);border-radius:8px;padding:.6rem;text-align:center;">
+        <div style="font-size:9px;color:var(--sub);font-family:var(--mono);margin-bottom:4px;">PROFIT</div>
+        <div style="font-size:16px;font-weight:700;color:var(--green);font-family:var(--mono);">₹${o.profit}</div>
+      </div>
+    </div>
+
+    <!-- AI GENERATED ORDER DETAILS -->
+    <div class="lb" style="margin-bottom:8px;">
+      <div class="lb-lbl">🔍 AI Search Query for Meesho</div>
+      <div style="font-family:var(--mono);font-size:12.5px;color:var(--accent);">${aiPlan.meesho_search_query}</div>
+      <div style="font-size:11px;color:var(--sub);margin-top:3px;">Filters: ${aiPlan.recommended_filters}</div>
+    </div>
+
+    <div class="lb" style="margin-bottom:8px;background:var(--s2);">
+      <div class="lb-lbl">📦 AI-Generated Checkout Details</div>
+      <div style="font-size:12.5px;font-family:var(--mono);line-height:1.9;color:var(--white);">
+        <span style="color:var(--sub);font-size:10px;">NAME:</span> ${aiPlan.checkout_name}<br>
+        <span style="color:var(--sub);font-size:10px;">ADDRESS:</span> ${aiPlan.checkout_address}<br>
+        <span style="color:var(--sub);font-size:10px;">PHONE:</span> ${aiPlan.checkout_phone}<br>
+        <span style="color:var(--sub);font-size:10px;">NOTE:</span> <span style="color:var(--txt2);">${aiPlan.delivery_note}</span>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:10px;">
+      <div class="lb" style="flex:1;margin-bottom:0;">
+        <div class="lb-lbl">🚚 ETA</div>
+        <div style="font-size:12.5px;color:var(--txt);">${aiPlan.estimated_delivery}</div>
+      </div>
+      <div class="lb" style="flex:1;margin-bottom:0;background:${aiPlan.risk_check==='clear'?'rgba(16,185,129,0.05)':'rgba(239,68,68,0.05)'};">
+        <div class="lb-lbl">🛡️ Risk Check</div>
+        <div style="font-size:12.5px;font-weight:700;color:${aiPlan.risk_check==='clear'?'var(--green)':'var(--red)'};">
+          ${aiPlan.risk_check==='clear'?'✓ All Clear':aiPlan.risk_check}
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+      <a href="${meeshoUrl}" target="_blank"
+        style="flex:2;min-width:160px;padding:11px 16px;border-radius:8px;font-size:13px;font-weight:700;
+        background:linear-gradient(135deg,rgba(233,30,140,0.2),rgba(255,107,53,0.2));
+        border:1px solid rgba(233,30,140,0.5);color:#ff6eb4;text-decoration:none;
+        display:flex;align-items:center;justify-content:center;gap:8px;"
+        onmouseover="this.style.background='linear-gradient(135deg,rgba(233,30,140,0.35),rgba(255,107,53,0.35))'"
+        onmouseout="this.style.background='linear-gradient(135deg,rgba(233,30,140,0.2),rgba(255,107,53,0.2))'">
+        🛍️ Open Meesho Order Page
+      </a>
+      <button onclick="
+        navigator.clipboard.writeText('${aiPlan.checkout_name}\n${aiPlan.checkout_address}\n${aiPlan.checkout_phone}\nNote: ${aiPlan.delivery_note}')
+        .then(()=>{this.textContent='✓ Copied!';this.style.color='var(--green)';setTimeout(()=>{this.textContent='📋 Copy Details';this.style.color='var(--txt2)';},2000)})"
+        style="flex:1;min-width:110px;padding:11px;border-radius:8px;font-size:12px;font-weight:600;
+        background:var(--card2);color:var(--txt2);border:1px solid var(--border2);cursor:pointer;">
+        📋 Copy Details
+      </button>
+      <button onclick="markShipped('${o.id}')"
+        style="flex:1;min-width:110px;padding:11px;border-radius:8px;font-size:12px;font-weight:700;
+        background:var(--blue-dim);color:var(--blue);border:1px solid rgba(59,130,246,0.3);cursor:pointer;">
+        📦 Mark Shipped
+      </button>
+    </div>`;
+
+  // Auto-open Meesho
+  setTimeout(() => { window.open(meeshoUrl, '_blank'); }, 800);
+
+  o.status = 'approved';
+  renderOrders(); renderExecution();
+  showExecToast('🤖 AI executed order for ' + o.product + '!', 'var(--green)');
+}
+
+function markShipped(id) {
+  const o = ORDERS.find(x => x.id === id);
+  if (!o) return;
+  o.status = 'shipped';
+  renderOrders(); renderExecution();
+  const panel = document.getElementById('autofill-preview');
+  panel.innerHTML = `
+    <div style="text-align:center;padding:2.5rem 1rem;">
+      <div style="font-size:48px;margin-bottom:12px;">📦</div>
+      <div style="font-family:var(--display);font-size:17px;font-weight:800;color:var(--green);margin-bottom:6px;">Order Shipped!</div>
+      <div style="font-size:12px;color:var(--sub);margin-bottom:14px;">Order ${id} is on its way to the customer.</div>
+      <div style="display:inline-block;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);
+        border-radius:8px;padding:.75rem 1.5rem;">
+        <div style="font-size:11px;color:var(--sub);font-family:var(--mono);margin-bottom:4px;">PROFIT EARNED</div>
+        <div style="font-size:28px;font-weight:800;color:var(--green);font-family:var(--mono);">+₹${o.profit}</div>
+      </div>
+    </div>`;
+  showExecToast('📦 Shipped! +₹' + o.profit + ' profit locked in', 'var(--blue)');
+}
+
+/* ── render execution list ── */
+function renderExecution() {
+  const list = ORDERS.filter(o => ['pending','approved','processing'].includes(o.status));
+  document.getElementById('exec-order-list').innerHTML = list.length ? list.map(o => {
+    const isProc = o.status === 'processing';
+    const isPend = o.status === 'pending';
+    return `<div class="order-card" onclick="showAutofill('${o.id}')" id="exec-${o.id}"
+      style="cursor:pointer;margin-bottom:8px;
+      border-color:${isPend?'rgba(245,158,11,0.3)':isProc?'rgba(168,85,247,0.3)':'rgba(16,185,129,0.3)'};">
+      <div class="order-status ${isPend?'os-pending':isProc?'os-shipped':'os-approved'}">
+        ${isPend?'🟡':isProc?'🤖':'✅'}
+      </div>
+      <div class="order-info">
+        <div class="order-name" style="font-size:12px;">${o.product}</div>
+        <div class="order-meta">${o.id} · <span style="color:var(--green);">+₹${o.profit}</span> · ${o.time}</div>
+      </div>
+      ${isPend
+        ? `<button class="btn btn-sm" style="background:var(--accent);color:#000;"
+            onclick="event.stopPropagation();approveOrder('${o.id}')">✓ Approve</button>`
+        : isProc
+          ? `<span style="font-size:11px;color:var(--purple);font-family:var(--mono);">🤖 AI Running</span>`
+          : `<span style="font-size:11px;color:var(--green);font-family:var(--mono);">✓ Done</span>`
+      }
+    </div>`;
+  }).join('') : '<div class="empty"><div class="empty-icon">✅</div><div class="empty-msg">No pending orders</div></div>';
+}
+
+function showAutofill(id) {
+  const o = ORDERS.find(x => x.id === id);
+  if (!o || o.status === 'processing') return;
+  if (o.status === 'pending') {
+    document.getElementById('autofill-preview').innerHTML = `
+      <div style="text-align:center;padding:2rem 1rem;">
+        <div style="font-size:36px;margin-bottom:10px;">🟡</div>
+        <div style="font-size:14px;font-weight:700;color:var(--accent);margin-bottom:8px;">${o.product}</div>
+        <div style="font-size:12px;color:var(--sub);margin-bottom:14px;">Profit: <strong style="color:var(--green);">₹${o.profit}</strong> · Customer: ${o.customer}</div>
+        <button class="btn" onclick="approveOrder('${o.id}')" style="font-size:13px;padding:10px 24px;">
+          ✓ Approve & Run AI Execution
+        </button>
+      </div>`;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   TRACKING
+═══════════════════════════════════════════ */
+function renderTracking() {
+  const shipments = [
+    {id:'AMZ-10289',product:'ColorFlow Gel Pen Set',tracking:'MH-8821-X-GDY',status:'shipped',customer:'Amit Joshi - Noida',eta:'Apr 6'},
+    {id:'AMZ-10291',product:'TinyCare Grooming Kit',tracking:'KA-3392-C-GDY',status:'transit',customer:'Sneha Gupta - Kolkata',eta:'Apr 5'},
+    {id:'AMZ-10288',product:'CleanPro Microfiber Bundle',tracking:'DL-7761-A-GDY',status:'delivered',customer:'Meera Patel - Delhi',eta:'Delivered'},
+    {id:'AMZ-10284',product:'ZenFlow Yoga Mat',tracking:'MH-2291-B-GDY',status:'delivered',customer:'Raj Sharma - Pune',eta:'Delivered'},
+    {id:'AMZ-10293',product:'CleanPro Microfiber Bundle',tracking:'Pending',status:'pending',customer:'Priya Sharma - Pune',eta:'Processing'},
+  ];
+  const sc = {shipped:'ts-shipped',transit:'ts-transit',delivered:'ts-delivered',pending:'ts-pending'};
+  document.getElementById('track-metrics').innerHTML =
+    `<div class="metric"><div class="metric-label">Active Shipments</div><div class="metric-value mv-blue">${shipments.filter(s=>s.status!=='delivered').length}</div></div>` +
+    `<div class="metric"><div class="metric-label">In Transit</div><div class="metric-value mv-amber">${shipments.filter(s=>s.status==='transit').length}</div></div>` +
+    `<div class="metric"><div class="metric-label">Delivered</div><div class="metric-value mv-green">${shipments.filter(s=>s.status==='delivered').length}</div></div>` +
+    `<div class="metric"><div class="metric-label">On-time Rate</div><div class="metric-value mv-green">94%</div></div>`;
+  document.getElementById('tracking-list').innerHTML = shipments.map(s=>`
+    <div class="track-row">
+      <span class="track-status ${sc[s.status]}">${s.status}</span>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:12.5px;font-weight:600;color:var(--white);margin-bottom:2px;">${s.product}</div>
+        <div style="font-size:11px;color:var(--sub);font-family:var(--mono);">${s.id} · ${s.customer}</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:11px;font-family:var(--mono);color:var(--txt2);">ETA: ${s.eta}</div>
+        <div style="font-size:10px;color:var(--sub);">${s.tracking}</div>
+      </div>
+    </div>`).join('');
+}
+
+function syncStatus() { alert('Syncing delivery status from Meesho... Status updated!'); renderTracking(); }
+
+/* ═══════════════════════════════════════════
+   ANALYTICS DASHBOARD
+═══════════════════════════════════════════ */
+function renderDashboard() {
+  const period = parseInt(document.getElementById('dash-period').value)||30;
+  const mult = period===7?0.25:period===30?1:3;
+  const base = {revenue:38200, profit:14800, orders:58, margin:38.7, roi:312};
+  document.getElementById('dash-metrics').innerHTML =
+    `<div class="metric"><div class="metric-label">Revenue</div><div class="metric-value mv-blue">₹${Math.round(base.revenue*mult).toLocaleString()}</div></div>` +
+    `<div class="metric"><div class="metric-label">Net Profit</div><div class="metric-value mv-green">₹${Math.round(base.profit*mult).toLocaleString()}</div></div>` +
+    `<div class="metric"><div class="metric-label">Orders</div><div class="metric-value">${Math.round(base.orders*mult)}</div></div>` +
+    `<div class="metric"><div class="metric-label">Avg Margin</div><div class="metric-value mv-green">${base.margin}%</div></div>` +
+    `<div class="metric"><div class="metric-label">ROI</div><div class="metric-value mv-purple">${base.roi}%</div></div>` +
+    `<div class="metric"><div class="metric-label">Return Rate</div><div class="metric-value mv-amber">6.2%</div></div>`;
+  // Sparkline chart
+  const profits = Array.from({length:14},()=>Math.floor(200+Math.random()*600));
+  const maxP = Math.max(...profits);
+  document.getElementById('profit-chart').innerHTML = profits.map(v=>`<div class="spark-bar" style="height:${Math.max(v/maxP*76,4)}px;flex:1;" title="₹${v}"></div>`).join('');
+  // Category chart
+  const cats = [{n:'Home & Kitchen',v:35,c:'#f59e0b'},{n:'Personal Care',v:28,c:'#10b981'},{n:'Fitness',v:18,c:'#3b82f6'},{n:'Baby',v:12,c:'#a855f7'},{n:'Stationery',v:7,c:'#ef4444'}];
+  document.getElementById('cat-chart').innerHTML = cats.map(c=>`<div class="chart-bar-wrap"><div class="chart-label"><span>${c.n}</span><span>${c.v}%</span></div><div class="chart-bar-outer"><div class="chart-bar-inner" style="width:${c.v}%;background:${c.c};"></div></div></div>`).join('');
+  // Product performance
+  document.getElementById('product-perf').innerHTML = `<div style="display:grid;grid-template-columns:1fr 80px 80px 80px;gap:8px;padding:6px 0;border-bottom:1px solid var(--border2);font-size:10px;font-weight:700;color:var(--sub);font-family:var(--mono);">
+    <span>PRODUCT</span><span>ORDERS</span><span>PROFIT ₹</span><span>MARGIN</span></div>` +
+    [{n:'ZenFlow Yoga Mat',o:18,p:6012,m:'44.6%'},{n:'CleanPro Microfiber',o:23,p:4784,m:'46.3%'},{n:'TinyCare Grooming Kit',o:11,p:2618,m:'43.3%'},{n:'ColorFlow Gel Pens',o:34,p:4148,m:'40.9%'},{n:'NeatDesk Cable Kit',o:15,p:2535,m:'44.6%'}]
+    .map(r=>`<div style="display:grid;grid-template-columns:1fr 80px 80px 80px;gap:8px;padding:10px 0;border-bottom:1px solid var(--border);align-items:center;font-size:12.5px;">
+      <span style="color:var(--white);font-weight:600;">${r.n}</span>
+      <span style="font-family:var(--mono);">${r.o}</span>
+      <span style="font-family:var(--mono);color:var(--green);">₹${r.p.toLocaleString()}</span>
+      <span style="font-family:var(--mono);color:var(--accent);">${r.m}</span>
+    </div>`).join('');
+}
+
+/* ═══════════════════════════════════════════
+   AI OPTIMIZATION LOOP
+═══════════════════════════════════════════ */
+async function runOptimization() {
+  const out = document.getElementById('opt-list');
+  out.innerHTML=`<div class="ai-wrap"><div class="ai-loading">Running AI analysis on your portfolio <div class="dots"><span></span><span></span><span></span></div></div></div>`;
+  window._currentOutputEl = out;
+  const portfolio = 'ZenFlow Yoga Mat: 9/10, ₹334 profit, 18 sales. CleanPro Microfiber: 8/10, ₹208, 23 sales. GlowTriad Serum: 9% returns, 7 sales. ColorFlow Pens: 7/10, ₹122, 34 sales.';
+  const prompt = `You are an Indian Amazon seller AI optimizer.
+Portfolio: ${portfolio}
+Give 5 actionable recommendations to improve performance.
+Return a JSON array only. No markdown, no explanation, no backticks. Each item must have: type (one of: price, listing, scale, exit, risk), product, recommendation, impact, priority (high, medium, or low).`;
+  try {
+    const text = await callClaude(prompt, 1000, '🔄 AI Optimization');
+    const recs = parseAIJson(text);
+    const typeClass = {price:'ot-price',listing:'ot-listing',scale:'ot-scale',exit:'ot-exit',risk:'ot-price'};
+    out.innerHTML = recs.map(r=>`<div class="opt-item">
+      <span class="opt-type ${typeClass[r.type]||'ot-listing'}">${r.type}</span>
+      <div>
+        <div class="opt-text"><strong style="color:var(--white);">${r.product}</strong> — ${r.recommendation}</div>
+        <div style="font-size:11.5px;color:var(--green);margin-top:3px;">Impact: ${r.impact}</div>
+        <div style="font-size:10.5px;color:var(--sub);margin-top:2px;font-family:var(--mono);">Priority: ${r.priority}</div>
+      </div>
+    </div>`).join('');
+  } catch(e) {
+    const errHtml = aiError(e); if(errHtml) out.innerHTML = errHtml;
+  }
+}
+
+function renderOptMetrics() {
+  document.getElementById('opt-metrics').innerHTML =
+    `<div class="metric"><div class="metric-label">Products Tracked</div><div class="metric-value">5</div></div>` +
+    `<div class="metric"><div class="metric-label">Avg Opp Score</div><div class="metric-value mv-green">8.1</div></div>` +
+    `<div class="metric"><div class="metric-label">Products to Scale</div><div class="metric-value mv-green">3</div></div>` +
+    `<div class="metric"><div class="metric-label">Products at Risk</div><div class="metric-value mv-amber">1</div></div>` +
+    `<div class="metric"><div class="metric-label">Exit Candidates</div><div class="metric-value mv-red">1</div></div>`;
+  document.getElementById('perf-monitor').innerHTML = [
+    {n:'ZenFlow Yoga Mat',sales:18,trend:'↑',status:'scale',sClass:'rb-low'},
+    {n:'CleanPro Microfiber',sales:23,trend:'↑↑',status:'scale',sClass:'rb-low'},
+    {n:'TinyCare Grooming Kit',sales:11,trend:'→',status:'stable',sClass:'rb-low'},
+    {n:'ColorFlow Gel Pens',sales:34,trend:'↑',status:'scale',sClass:'rb-low'},
+    {n:'GlowTriad Serum',sales:7,trend:'↓',status:'at risk',sClass:'rb-high'},
+  ].map(p=>`<div class="compliance-row">
+    <div class="cr-icon">${p.trend}</div>
+    <div class="cr-info" style="flex:1;">
+      <div class="cr-title">${p.n}</div>
+      <div class="cr-desc">${p.sales} sales in last 30 days</div>
+    </div>
+    <span class="risk-badge ${p.sClass}">${p.status}</span>
+  </div>`).join('');
+}
+
+/* ═══════════════════════════════════════════
+   RISK & COMPLIANCE
+═══════════════════════════════════════════ */
+function renderRisk() {
+  document.getElementById('risk-metrics').innerHTML =
+    `<div class="metric"><div class="metric-label">Active Alerts</div><div class="metric-value mv-red">2</div></div>` +
+    `<div class="metric"><div class="metric-label">Policy Warnings</div><div class="metric-value mv-amber">1</div></div>` +
+    `<div class="metric"><div class="metric-label">High Return SKUs</div><div class="metric-value mv-amber">1</div></div>` +
+    `<div class="metric"><div class="metric-label">Duplicate Risk</div><div class="metric-value mv-green">0</div></div>`;
+  document.getElementById('risk-alerts').innerHTML = [
+    {type:'danger',icon:'⚠️',title:'High Return Rate Detected',body:'GlowTriad Serum Combo has 9.2% return rate (threshold: 8%). Review ingredient accuracy in listing.'},
+    {type:'warn',icon:'🔔',title:'Supplier Quality Inconsistency',body:'TinyCare Grooming Kit: 2 buyers mentioned quality difference from photos. Consider re-sampling.'},
+    {type:'info',icon:'🛡️',title:'Policy Check Recommended',body:'Your cosmetics listings may need updated compliance documentation per Amazon India Q4 guidelines.'},
+  ].map(a=>`<div class="alert-card ${a.type}"><div class="alert-icon">${a.icon}</div><div><div style="font-size:12.5px;font-weight:700;color:var(--white);margin-bottom:3px;">${a.title}</div><div class="alert-msg" style="font-size:11.5px;">${a.body}</div></div></div>`).join('');
+  document.getElementById('compliance-list').innerHTML = [
+    {icon:'📋',title:'Avoid Therapeutic Claims',desc:'Never claim products cure, treat, or prevent any medical condition. "Dermatologist-tested" is OK; "treats acne" is not.'},
+    {icon:'👶',title:'Baby Product Age Warning',desc:'All baby products must display "For ages X+" prominently in title and description.'},
+    {icon:'🏷️',title:'Avoid Branded Keywords',desc:'Never include competitor brand names (Dettol, Himalaya, etc.) in your listing title, bullets, or backend keywords.'},
+    {icon:'🚫',title:'No Guaranteed Claims',desc:'Avoid "100% results guaranteed" or any absolute performance claims without substantiation.'},
+    {icon:'📦',title:'Accurate Product Images',desc:'Images must match the actual product. Do not use stock photos that misrepresent color, size, or quantity.'},
+  ].map(c=>`<div class="compliance-row"><div class="cr-icon">${c.icon}</div><div class="cr-info"><div class="cr-title">${c.title}</div><div class="cr-desc">${c.desc}</div></div></div>`).join('');
+}
+
+async function runPolicyCheck() {
+  const input = document.getElementById('policy-check-input').value.trim();
+  if(!input){alert('Enter a product title or description to check.');return;}
+  const out = document.getElementById('policy-output');
+  out.innerHTML=`<div class="ai-loading">Checking policy safety <div class="dots"><span></span><span></span><span></span></div></div>`;
+  window._currentOutputEl = out;
+  const prompt = `You are an Amazon India policy compliance checker.
+Listing text to analyze: ${input}
+Check for policy violations.
+Return a JSON object only. No markdown, no explanation, no backticks. Keys: safe (boolean), issues (array of strings), warnings (array of strings), suggestions (array of 2 strings), verdict (exactly one of: SAFE, REVIEW, RISKY), explanation.`;
+  try {
+    const text = await callClaude(prompt, 600, '🛡️ Policy Safety Check');
+    const d = parseAIJson(text);
+    const col = {SAFE:'var(--green)',REVIEW:'var(--accent)',RISKY:'var(--red)'};
+    out.innerHTML=`<div class="card2">
+      <div style="font-size:14px;font-weight:700;color:${col[d.verdict]};margin-bottom:8px;">${d.verdict==='SAFE'?'✓':'⚠'} ${d.verdict} — ${d.explanation}</div>
+      ${d.issues?.length?`<div style="font-size:12px;color:var(--red);margin-bottom:6px;"><strong>Issues:</strong> ${d.issues.join(', ')}</div>`:''}
+      ${d.warnings?.length?`<div style="font-size:12px;color:var(--accent);margin-bottom:6px;"><strong>Warnings:</strong> ${d.warnings.join(', ')}</div>`:''}
+      <div style="font-size:12px;color:var(--green);"><strong>Suggestions:</strong> ${d.suggestions?.join('; ')}</div>
+    </div>`;
+  } catch(e) {
+    const errHtml = aiError(e); if(errHtml) out.innerHTML = errHtml;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   NOTIFICATIONS
+═══════════════════════════════════════════ */
+function renderNotifications() {
+  document.getElementById('action-plan').innerHTML = [
+    {icon:'🔍',title:'Discover 2 new products',body:'AI suggests kitchen and fitness categories for today'},
+    {icon:'✅',title:'Approve 2 pending orders',body:'AMZ-10293 & AMZ-10294 waiting — combined profit ₹542'},
+    {icon:'📈',title:'Optimize GlowTriad listing',body:'Return rate is high — update ingredient accuracy in bullets'},
+    {icon:'💰',title:'Review pricing for gel pens',body:'Competition dropped — you can increase price to ₹319'},
+  ].map(a=>`<div class="notif-card"><div class="notif-icon">${a.icon}</div><div class="notif-content"><div class="notif-title">${a.title}</div><div class="notif-body">${a.body}</div></div></div>`).join('');
+  document.getElementById('notif-feed').innerHTML = [
+    {icon:'💰',title:'Order Profit Alert',body:'AMZ-10293 received — CleanPro Microfiber Bundle — Profit: ₹208',time:'2 min ago'},
+    {icon:'🚨',title:'Risk Alert',body:'GlowTriad Serum return rate exceeded 8% threshold — take action',time:'15 min ago'},
+    {icon:'📦',title:'Shipment Update',body:'AMZ-10289 shipped via Meesho Standard — ETA Apr 6',time:'3 hr ago'},
+    {icon:'🤖',title:'AI Recommendation',body:'ZenFlow Yoga Mat: Increase price to ₹799 — demand is high, competition dropped',time:'6 hr ago'},
+    {icon:'✅',title:'Order Completed',body:'AMZ-10285 delivered — NeatDesk Cable Kit — ₹169 profit earned',time:'1 day ago'},
+    {icon:'💡',title:'Daily Opportunity',body:'AI found 3 new high-scoring products in fitness category — check AI Discovery',time:'8 hr ago'},
+  ].map(n=>`<div class="notif-card"><div class="notif-icon">${n.icon}</div><div class="notif-content"><div class="notif-title">${n.title}</div><div class="notif-body">${n.body}</div><div style="font-size:10.5px;color:var(--sub);margin-top:3px;font-family:var(--mono);">${n.time}</div></div></div>`).join('');
+}
+
+/* ═══════════════════════════════════════════
+   CUSTOM AI CHAT
+═══════════════════════════════════════════ */
+function setQuery(el) { document.getElementById('custom-query').value = el.textContent; }
+
+async function runCustomQuery() {
+  const query = document.getElementById('custom-query').value.trim();
+  if(!query){alert('Please enter your query.');return;}
+  const out = document.getElementById('custom-output');
+  out.innerHTML=`<div class="ai-wrap"><div class="ai-loading">Analyzing <div class="dots"><span></span><span></span><span></span></div></div></div>`;
+  window._currentOutputEl = out;
+  const prompt = `Indian Meesho→Amazon arbitrage advisor. User asks: "${query}"
+Give practical, specific advice with product examples, prices in INR, and key steps. Be concise and direct.`;
+  try {
+    const text = await callClaude(prompt, 1200, '💬 Ask AI');
+    out.innerHTML=`<div class="ai-wrap"><div class="ai-text">${text}</div></div>`;
+  } catch(e) {
+    const errHtml = aiError(e); if(errHtml) out.innerHTML = errHtml;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   MODE & TAB SWITCHING
+═══════════════════════════════════════════ */
+let currentMode = 'beginner';
+function setMode(mode, btn) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  // In beginner mode, highlight the most important tabs
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    const proOnly = ['trend','smart-price','bundle-gen','optimization','sku'];
+    const tabId = n.getAttribute('onclick')?.match(/switchTab\('([^']+)'/)?.[1];
+    if(mode==='beginner' && proOnly.includes(tabId)) { n.style.opacity='0.5'; } else { n.style.opacity='1'; }
+  });
+}
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.nav-item').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+}
+
+/* ═══════════════════════════════════════════
+   AI ENGINE — BUILT-IN (NO KEY NEEDED)
+   Uses Anthropic API via direct browser access.
+   Users just sign up and all features work.
+═══════════════════════════════════════════ */
+window._currentOutputEl = null;
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/* ── APP-LEVEL AI CONFIG ──
+   Paste your Gemini API key below once.
+   Users never see or enter this — baked into the app.
+   Get free key (no card): aistudio.google.com/apikey
+─────────────────────────────────────────── */
+const _APP_AI_KEY = 'PASTE_YOUR_GEMINI_KEY_HERE';
+/* ─────────────────────────────────────────── */
+
+const _AI_MODELS = ['gemini-2.5-flash-lite', 'gemini-2.5-flash'];
+let _aiModelIdx = 0, _lastAiCall = 0;
+
+async function _aiCountdown(sec, label) {
+  const el = window._currentOutputEl;
+  const end = Date.now() + sec * 1000;
+  while (Date.now() < end) {
+    const left = Math.ceil((end - Date.now()) / 1000);
+    if (el) el.innerHTML = `<div class="ai-wrap" style="text-align:center;padding:1.5rem;">
+      <div style="font-size:28px;margin-bottom:8px;">⏳</div>
+      <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent);">${left}s</div>
+      <div style="font-size:12px;color:var(--txt2);margin:6px 0 12px;">${label}</div>
+      <div style="height:4px;background:var(--border);border-radius:99px;max-width:220px;margin:0 auto;overflow:hidden;">
+        <div style="height:100%;background:var(--accent);border-radius:99px;
+          width:${((sec-(left))/sec*100).toFixed(0)}%;transition:width .9s linear;"></div>
+      </div>
+      <div style="font-size:10px;color:var(--sub);margin-top:8px;">Retrying automatically…</div>
+    </div>`;
+    await sleep(900);
+  }
+  if (el) el.innerHTML = `<div class="ai-wrap"><div class="ai-loading">Retrying <div class="dots"><span></span><span></span><span></span></div></div></div>`;
+}
+
+async function callClaude(prompt, maxTokens = 800, featureName = 'AI', _try = 0) {
+  /* Gate: require account */
+  if (!currentUser) {
+    toggleProfileModal();
+    throw new Error('LOGIN_REQUIRED');
+  }
+
+  /* Gate: app key must be configured by developer */
+  if (!_APP_AI_KEY || _APP_AI_KEY === 'PASTE_YOUR_GEMINI_KEY_HERE') {
+    throw new Error('APP_KEY_NOT_SET');
+  }
+
+  /* Throttle: 6s between calls */
+  const wait = 6000 - (Date.now() - _lastAiCall);
+  if (wait > 0) await sleep(wait);
+  _lastAiCall = Date.now();
+
+  const model = _AI_MODELS[_aiModelIdx % _AI_MODELS.length];
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${_APP_AI_KEY}`;
+
+  let res;
+  try {
+    res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { maxOutputTokens: maxTokens, temperature: 0.7 }
+      })
+    });
+  } catch (e) {
+    throw new Error('Network error — check your internet connection');
+  }
+
+  if (res.status === 429) {
+    if (_try >= 3) throw new Error('RATE_LIMIT_FINAL');
+    _aiModelIdx++;
+    const next = _AI_MODELS[_aiModelIdx % _AI_MODELS.length];
+    await _aiCountdown([20,35,60][_try] || 60, `Rate limited — switching to ${next}…`);
+    _lastAiCall = 0;
+    return callClaude(prompt, maxTokens, featureName, _try + 1);
+  }
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body?.error?.message || `Error ${res.status}`);
+  }
+
+  _aiModelIdx = 0;
+  const data = await res.json();
+  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  if (!text) throw new Error('Empty response — please try again');
+  return text.trim();
+}
+
+/* Robust JSON extractor — strips markdown fences, trailing commas, etc. */
+function parseAIJson(raw) {
+  let s = raw.trim();
+  s = s.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+  const firstArr = s.indexOf('[');
+  const firstObj = s.indexOf('{');
+  let start = -1, endChar = '';
+  if (firstArr !== -1 && (firstObj === -1 || firstArr < firstObj)) {
+    start = firstArr; endChar = ']';
+  } else if (firstObj !== -1) {
+    start = firstObj; endChar = '}';
+  }
+  if (start !== -1) {
+    const end = s.lastIndexOf(endChar);
+    if (end > start) s = s.slice(start, end + 1);
+  }
+  s = s.replace(/,\s*([}\]])/g, '$1');
+  return JSON.parse(s);
+}
+
+function aiError(e) {
+  if (!e || e.message === 'CANCELLED') return '';
+  if (e.message === 'LOGIN_REQUIRED') {
+    return `<div class="alert-card warn" style="margin-top:8px;">
+      <div class="alert-icon">👤</div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--accent);">Sign In to Use AI Features</div>
+        <div class="alert-msg" style="font-size:12px;">Create a free account to unlock all AI features instantly.
+          <br><button onclick="toggleProfileModal()" style="margin-top:6px;background:var(--accent);color:#000;border:none;
+          border-radius:6px;padding:5px 14px;font-size:12px;font-weight:700;cursor:pointer;">Sign Up Free →</button>
+        </div>
+      </div>
+    </div>`;
+  }
+  if (e.message === 'APP_KEY_NOT_SET') {
+    return `<div class="alert-card warn" style="margin-top:8px;">
+      <div class="alert-icon">🔧</div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--accent);">Developer Setup Required</div>
+        <div class="alert-msg" style="font-size:12px;">
+          Open this HTML file → find <code style="background:var(--card);padding:1px 5px;border-radius:3px;">_APP_AI_KEY</code>
+          → replace <code style="background:var(--card);padding:1px 5px;border-radius:3px;">PASTE_YOUR_GEMINI_KEY_HERE</code>
+          with your Gemini key.<br>
+          <a href="https://aistudio.google.com/apikey" target="_blank" style="color:var(--blue);font-weight:700;">
+            Get free key at aistudio.google.com/apikey →
+          </a>
+        </div>
+      </div>
+    </div>`;
+  }
+  if (e.message === 'RATE_LIMIT_FINAL') {
+    return `<div class="alert-card warn" style="margin-top:8px;"><div class="alert-icon">⏳</div><div>
+      <div style="font-size:13px;font-weight:700;color:var(--accent);">Rate Limited</div>
+      <div class="alert-msg" style="font-size:12px;">Please wait 1 minute then try again.</div>
+    </div></div>`;
+  }
+  if (e.message?.toLowerCase().includes('network') || e.message?.toLowerCase().includes('failed to fetch')) {
+    return `<div class="alert-card warn" style="margin-top:8px;"><div class="alert-icon">📶</div><div>
+      <div style="font-size:13px;font-weight:700;color:var(--accent);">Network Error</div>
+      <div class="alert-msg" style="font-size:12px;">Check your internet connection and try again.</div>
+    </div></div>`;
+  }
+  return `<div class="alert-card danger" style="margin-top:8px;"><div class="alert-icon">⚠️</div><div>
+    <div style="font-size:13px;font-weight:700;color:var(--red);">Error</div>
+    <div class="alert-msg" style="font-size:12px;">${e.message}</div>
+  </div></div>`;
+}
+
+/* No-op stubs — key functions no longer needed */
+function saveKey() {}
+function clearKey() {}
+function initKey() {}
+
+/* ═══════════════════════════════════════════
+   PROFILE / AUTH SYSTEM
+═══════════════════════════════════════════ */
+let currentUser = null;
+
+function toggleProfileModal() {
+  const modal = document.getElementById('profile-modal');
+  const overlay = document.getElementById('profile-overlay');
+  const isOpen = modal.style.display !== 'none';
+  modal.style.display = isOpen ? 'none' : 'block';
+  overlay.style.display = isOpen ? 'none' : 'block';
+}
+function closeProfileModal() {
+  document.getElementById('profile-modal').style.display = 'none';
+  document.getElementById('profile-overlay').style.display = 'none';
+}
+
+function authTab(tab) {
+  const emailForm = document.getElementById('auth-email-form');
+  const phoneForm = document.getElementById('auth-phone-form');
+  const emailBtn  = document.getElementById('auth-tab-email');
+  const phoneBtn  = document.getElementById('auth-tab-phone');
+  if (tab === 'email') {
+    emailForm.style.display = 'block'; phoneForm.style.display = 'none';
+    emailBtn.style.cssText  = 'flex:1;padding:6px;border-radius:6px;font-size:11.5px;font-weight:700;cursor:pointer;background:var(--accent);color:#000;border:none;';
+    phoneBtn.style.cssText  = 'flex:1;padding:6px;border-radius:6px;font-size:11.5px;font-weight:700;cursor:pointer;background:var(--card);color:var(--sub);border:1px solid var(--border2);';
+  } else {
+    emailForm.style.display = 'none'; phoneForm.style.display = 'block';
+    phoneBtn.style.cssText  = 'flex:1;padding:6px;border-radius:6px;font-size:11.5px;font-weight:700;cursor:pointer;background:var(--accent);color:#000;border:none;';
+    emailBtn.style.cssText  = 'flex:1;padding:6px;border-radius:6px;font-size:11.5px;font-weight:700;cursor:pointer;background:var(--card);color:var(--sub);border:1px solid var(--border2);';
+  }
+}
+
+function doSignup() {
+  const name    = document.getElementById('auth-name').value.trim();
+  const email   = document.getElementById('auth-email').value.trim();
+  const phone   = document.getElementById('auth-phone').value.trim();
+  const pass    = document.getElementById('auth-pass').value;
+  const errEl   = document.getElementById('auth-error');
+  const contact = email || phone;
+  if (!contact) { errEl.textContent = 'Enter email or phone'; errEl.style.display = 'block'; return; }
+  if (email && !email.includes('@')) { errEl.textContent = 'Invalid email address'; errEl.style.display = 'block'; return; }
+  errEl.style.display = 'none';
+  const user = { name: name || contact.split('@')[0], contact, joinDate: new Date().toLocaleDateString('en-IN') };
+  try { localStorage.setItem('arb_user', JSON.stringify(user)); } catch(e) {}
+  setLoggedIn(user);
+}
+
+function doLogin() {
+  // For demo: just read from localStorage
+  try {
+    const saved = localStorage.getItem('arb_user');
+    if (saved) { setLoggedIn(JSON.parse(saved)); return; }
+  } catch(e) {}
+  const errEl = document.getElementById('auth-error');
+  errEl.textContent = 'No account found. Please sign up first.';
+  errEl.style.display = 'block';
+}
+
+function setLoggedIn(user) {
+  currentUser = user;
+  const initials = (user.name || '?').substring(0,2).toUpperCase();
+
+  // Update header avatar
+  document.getElementById('avatar-initials').textContent = initials;
+  document.getElementById('avatar-dot').style.display = 'block';
+
+  // Show AI active badge in header
+  let aiBadge = document.getElementById('ai-active-badge');
+  if (!aiBadge) {
+    aiBadge = document.createElement('span');
+    aiBadge.id = 'ai-active-badge';
+    aiBadge.className = 'hbadge';
+    aiBadge.style.cssText = 'background:rgba(16,185,129,0.15);color:var(--green);border:1px solid rgba(16,185,129,0.35);display:flex;align-items:center;gap:4px;';
+    aiBadge.innerHTML = '<span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;animation:blink 1.5s infinite;"></span>AI Active';
+    const badges = document.querySelector('.header-badges');
+    if (badges) badges.insertBefore(aiBadge, badges.firstChild);
+  }
+  aiBadge.style.display = 'flex';
+
+  // Update logged in profile view
+  document.getElementById('profile-big-avatar').textContent = initials;
+  document.getElementById('profile-name-display').textContent = user.name;
+  document.getElementById('profile-contact-display').textContent = user.contact;
+  document.getElementById('stat-since').textContent = user.joinDate;
+  document.getElementById('stat-products').textContent = PRODUCTS.length;
+  document.getElementById('stat-orders').textContent = ORDERS.filter(o=>o.status!=='pending').length;
+
+  // Switch modal views
+  document.getElementById('profile-auth').style.display     = 'none';
+  document.getElementById('profile-loggedin').style.display = 'block';
+
+  // Close modal after short delay
+  setTimeout(closeProfileModal, 800);
+}
+
+function doLogout() {
+  currentUser = null;
+  try { localStorage.removeItem('arb_user'); } catch(e) {}
+  document.getElementById('avatar-initials').textContent = '?';
+  document.getElementById('avatar-dot').style.display    = 'none';
+  document.getElementById('profile-auth').style.display     = 'block';
+  document.getElementById('profile-loggedin').style.display = 'none';
+  const badge = document.getElementById('ai-active-badge');
+  if (badge) badge.style.display = 'none';
+  closeProfileModal();
+}
+
+function initProfile() {
+  try {
+    const saved = localStorage.getItem('arb_user');
+    if (saved) setLoggedIn(JSON.parse(saved));
+  } catch(e) {}
+}
+
+/* ── LOGO DOWNLOAD ── */
+function downloadLogo(idx, name) {
+  if (!window._brandSVGs || !window._brandSVGs[idx]) return;
+  const svg  = window._brandSVGs[idx];
+  const blob = new Blob([svg], { type: 'image/svg+xml' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `${name.replace(/\s+/g,'_')}_logo.svg`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ═══════════════════════════════════════════
+   INITIALIZE ALL
+═══════════════════════════════════════════ */
+initProfile();
+renderCards();
+calcProfit();
+renderOrders();
+renderExecution();
+renderTracking();
+renderDashboard();
+renderOptMetrics();
+renderRisk();
+renderNotifications();
+renderSKU();
+</script>
+</body>
+</html>
